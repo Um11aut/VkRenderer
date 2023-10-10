@@ -4,14 +4,14 @@ VKAPI_ATTR VkBool32 VKAPI_CALL VkRenderer::Debugger::debugCallback(VkDebugUtilsM
 {
 	switch (messageSeverity) {
 	case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
-		Logger::print({"Warning validation layer: ", pCallbackData->pMessage}, MessageType::Warning);
+		DebugLogger::print(pCallbackData->pMessage, MessageType::Warning);
 		break;
 	case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
-		Logger::print({ "Error validation layer: ", pCallbackData->pMessage }, MessageType::Error);
+		DebugLogger::print(pCallbackData->pMessage, MessageType::Error);
 		std::terminate();
 		break;
 	default:
-		Logger::print({ "validation layer: ", pCallbackData->pMessage }, MessageType::Nothing);
+		DebugLogger::print(pCallbackData->pMessage);
 		break;
 	}
 

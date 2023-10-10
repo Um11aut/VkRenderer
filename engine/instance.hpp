@@ -35,16 +35,12 @@ namespace VkRenderer {
 
 		void createInstance();
 		void createInfo();
-		void clean();
 		void enableExtensions();
-		void checkInstanceCreation();
 
 		void getRequiredExtensions();
 		void getAvailableExtensions();
 
 		void updateExtensions();
-
-		Logger logger;
 	public:
 		Instance(std::string appName, std::string engineName,
 			VkInstance* instance, VkInstanceCreateInfo* instanceInfo,
@@ -54,7 +50,6 @@ namespace VkRenderer {
 		void appendExtension(const char* extensionName);
 
 		void create();
-		void destroy();
 
 		void printExtensions(bool printRequired, bool printAvailable);
 	};

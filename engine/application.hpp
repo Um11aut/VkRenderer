@@ -4,6 +4,7 @@
 #include "validation_layers.hpp"
 #include "debugger.hpp"
 #include "logger.hpp"
+#include "physical_device.hpp"
 #include <memory>
 
 #ifdef NDEBUG
@@ -18,6 +19,7 @@ namespace VkRenderer {
 		VkInstance m_instance;
 		VkInstanceCreateInfo m_instanceInfo{};
 		VkApplicationInfo m_appInfo{};
+		VkPhysicalDevice m_device;
 
 		const int window_width, window_height;
 
@@ -30,6 +32,7 @@ namespace VkRenderer {
 		std::shared_ptr<VkRenderer::ValidationLayer> app_validation_layer;
 
 		std::unique_ptr<VkRenderer::Instance> app_instance;
+		std::unique_ptr<VkRenderer::PhysicalDevise> app_physical_device;
 		std::unique_ptr<VkRenderer::Debugger> app_debugger;
 
 	public:

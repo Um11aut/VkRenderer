@@ -31,4 +31,6 @@ void VkRenderer::App::initVk()
 	app_instance->printExtensions(true, false);
 
 	app_debugger = std::make_unique<VkRenderer::Debugger>(app_validation_layer, &m_instance);
+
+	app_physical_device = std::make_unique<VkRenderer::PhysicalDevise>(m_device, &m_instance);
 }

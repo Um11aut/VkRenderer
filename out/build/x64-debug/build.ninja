@@ -113,6 +113,14 @@ build CMakeFiles\VkRenderer.dir\engine\debugger.cpp.obj: CXX_COMPILER__VkRendere
   TARGET_COMPILE_PDB = CMakeFiles\VkRenderer.dir\
   TARGET_PDB = VkRenderer.pdb
 
+build CMakeFiles\VkRenderer.dir\engine\physical_device.cpp.obj: CXX_COMPILER__VkRenderer_unscanned_Debug C$:\Users\askk\source\repos\VkRenderer\engine\physical_device.cpp || cmake_object_order_depends_target_VkRenderer
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Ob0 /Od /RTC1 -std:c++20 -ZI
+  INCLUDES = -IC:\Users\askk\source\repos\VkRenderer\deps\glfw\include -IC:\Users\askk\source\repos\VkRenderer\deps\glm -external:IC:\VulkanSDK\1.3.250.1\Include -external:W0
+  OBJECT_DIR = CMakeFiles\VkRenderer.dir
+  OBJECT_FILE_DIR = CMakeFiles\VkRenderer.dir\engine
+  TARGET_COMPILE_PDB = CMakeFiles\VkRenderer.dir\
+  TARGET_PDB = VkRenderer.pdb
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target VkRenderer
@@ -121,7 +129,7 @@ build CMakeFiles\VkRenderer.dir\engine\debugger.cpp.obj: CXX_COMPILER__VkRendere
 #############################################
 # Link the executable VkRenderer.exe
 
-build VkRenderer.exe: CXX_EXECUTABLE_LINKER__VkRenderer_Debug CMakeFiles\VkRenderer.dir\main.cpp.obj CMakeFiles\VkRenderer.dir\engine\renderer.cpp.obj CMakeFiles\VkRenderer.dir\engine\window.cpp.obj CMakeFiles\VkRenderer.dir\engine\application.cpp.obj CMakeFiles\VkRenderer.dir\engine\instance.cpp.obj CMakeFiles\VkRenderer.dir\engine\logger.cpp.obj CMakeFiles\VkRenderer.dir\engine\validation_layers.cpp.obj CMakeFiles\VkRenderer.dir\engine\debugger.cpp.obj | C$:\VulkanSDK\1.3.250.1\Lib\vulkan-1.lib deps\glfw\src\glfw3.lib C$:\VulkanSDK\1.3.250.1\Lib\vulkan-1.lib || deps\glfw\src\glfw3.lib
+build VkRenderer.exe: CXX_EXECUTABLE_LINKER__VkRenderer_Debug CMakeFiles\VkRenderer.dir\main.cpp.obj CMakeFiles\VkRenderer.dir\engine\renderer.cpp.obj CMakeFiles\VkRenderer.dir\engine\window.cpp.obj CMakeFiles\VkRenderer.dir\engine\application.cpp.obj CMakeFiles\VkRenderer.dir\engine\instance.cpp.obj CMakeFiles\VkRenderer.dir\engine\logger.cpp.obj CMakeFiles\VkRenderer.dir\engine\validation_layers.cpp.obj CMakeFiles\VkRenderer.dir\engine\debugger.cpp.obj CMakeFiles\VkRenderer.dir\engine\physical_device.cpp.obj | C$:\VulkanSDK\1.3.250.1\Lib\vulkan-1.lib deps\glfw\src\glfw3.lib C$:\VulkanSDK\1.3.250.1\Lib\vulkan-1.lib || deps\glfw\src\glfw3.lib
   FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Ob0 /Od /RTC1 -ZI
   LINK_FLAGS = /machine:x64 /debug /INCREMENTAL /subsystem:console
   LINK_LIBRARIES = C:\VulkanSDK\1.3.250.1\Lib\vulkan-1.lib  deps\glfw\src\glfw3.lib  C:\VulkanSDK\1.3.250.1\Lib\vulkan-1.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib

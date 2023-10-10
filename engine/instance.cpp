@@ -6,10 +6,10 @@
 void VkRenderer::Instance::createInstance()
 {
 	if (m_validationLayer->isEnabled()) {
-		logger.printOnce("Validation Layers enabled", MessageType::Nothing);
+		Logger::printOnce("Validation Layers enabled", MessageType::Nothing);
 
 		if (!m_validationLayer->checkValidationLayerSupport()) {
-			logger.printOnce("Validation Layer requested, but not available!", MessageType::Error);
+			Logger::printOnce("Validation Layer requested, but not available!", MessageType::Error);
 			std::terminate();
 		}
 	}
@@ -26,11 +26,6 @@ void VkRenderer::Instance::createInfo()
 {
 	m_instanceInfo->sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	m_instanceInfo->pApplicationInfo = m_appInfo;
-}
-
-void VkRenderer::Instance::clean()
-{
-	vkDestroyInstance(*m_instance, nullptr);
 }
 
 void VkRenderer::Instance::enableExtensions()
@@ -55,17 +50,6 @@ void VkRenderer::Instance::enableExtensions()
 	}
 }
 
-void VkRenderer::Instance::checkInstanceCreation()
-{
-	if (vkCreateInstance(m_instanceInfo, nullptr, m_instance) != VK_SUCCESS) {
-		Logger::printOnce("Failed to create Vulkan Instance", MessageType::Error);
-		std::terminate();
-	}
-	else {
-		logger.print({"Created Instance! Application Name: ", m_appInfo->pApplicationName}, MessageType::Success);
-	}
-}
-
 void VkRenderer::Instance::getRequiredExtensions()
 {
 	for (uint32_t i = 0; i < glfwExtensionCount; i++) {
@@ -73,7 +57,9 @@ void VkRenderer::Instance::getRequiredExtensions()
 	}
 
 	requiredExtensions.emplace_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
-	updateExtensions();
+	m_instanceInfo->flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+
+	// so it can be called without append
 }
 
 void VkRenderer::Instance::getAvailableExtensions()
@@ -87,8 +73,6 @@ void VkRenderer::Instance::getAvailableExtensions()
 
 void VkRenderer::Instance::updateExtensions()
 {
-	m_instanceInfo->flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
-
 	m_instanceInfo->enabledExtensionCount = static_cast<uint32_t>(requiredExtensions.size());
 	m_instanceInfo->ppEnabledExtensionNames = requiredExtensions.data();
 }
@@ -96,17 +80,18 @@ void VkRenderer::Instance::updateExtensions()
 void VkRenderer::Instance::appendExtension(const char* extensionName)
 {
 	requiredExtensions.push_back(extensionName);
-	updateExtensions();
 }
 
 void VkRenderer::Instance::create()
 {
-	checkInstanceCreation();
-}
-
-void VkRenderer::Instance::destroy()
-{
-	clean();
+	updateExtensions();
+	if (vkCreateInstance(m_instanceInfo, nullptr, m_instance) != VK_SUCCESS) {
+		Logger::printOnce("Failed to create Vulkan Instance", MessageType::Error);
+		std::terminate();
+	}
+	else {
+		Logger::print({ "Created Instance! Application Name: ", m_appInfo->pApplicationName }, MessageType::Success);
+	}
 }
 
 VkRenderer::Instance::Instance(std::string appName, std::string engineName,
@@ -125,25 +110,25 @@ VkRenderer::Instance::Instance(std::string appName, std::string engineName,
 
 VkRenderer::Instance::~Instance()
 {
-	clean();
+	vkDestroyInstance(*m_instance, nullptr);
 }
 
 void VkRenderer::Instance::printExtensions(bool printRequired, bool printAvailable)
 {
 	if (printRequired) {
-		logger.printSeparator();
+		Logger::printSeparator();
 
-		logger.printOnce("Used extensions: ", MessageType::Nothing);
+		Logger::printOnce("Used extensions: ", MessageType::Nothing);
 		for (const auto& extension : requiredExtensions) {
-			logger.printOnce(extension, MessageType::Nothing);
+			Logger::printOnce(extension, MessageType::Nothing);
 		}
 	}
 	if (printAvailable) {
-		logger.printSeparator();
+		Logger::printSeparator();
 
-		logger.printOnce("Available extensions: ", MessageType::Nothing);
+		Logger::printOnce("Available extensions: ", MessageType::Nothing);
 		for (const auto& extension : availibleExtensions) {
-			logger.printOnce(extension.extensionName, MessageType::Nothing);
+			Logger::printOnce(extension.extensionName, MessageType::Nothing);
 		}
 	}
 }
