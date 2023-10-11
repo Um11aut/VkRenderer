@@ -1,8 +1,8 @@
 #include <iostream>
-#include "engine/application.hpp"
+#include "engine/entry.hpp"
 
 int main() {
-	App app(800, 600);
+	Application::createApplication();
 
-	app.run();
+	Application::run();
 }

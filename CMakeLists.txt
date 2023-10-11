@@ -13,10 +13,9 @@ project ("VkRenderer")
 
 
 # Добавьте источник в исполняемый файл этого проекта.
-add_executable (VkRenderer "main.cpp" 
-"engine/renderer.cpp" "engine/renderer.hpp" 
+add_executable (VkRenderer "main.cpp" "engine/entry.hpp" 
+"engine/renderer.hpp" "engine/renderer.cpp" 
 "engine/window.cpp" "engine/window.hpp" 
-"engine/application.cpp" "engine/application.hpp" 
 "engine/instance.cpp" "engine/instance.hpp" 
 "engine/logger.cpp" "engine/logger.hpp" 
 "engine/validation_layers.cpp" "engine/validation_layers.hpp"

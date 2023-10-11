@@ -16,8 +16,8 @@ namespace VkRenderer {
 	private:
 		VkInstance* m_instance{};
 
-		VkInstanceCreateInfo* m_instanceInfo{};
-		VkApplicationInfo* m_appInfo{};
+		VkInstanceCreateInfo m_instanceInfo{};
+		VkApplicationInfo m_appInfo{};
 
 		VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
 
@@ -43,8 +43,7 @@ namespace VkRenderer {
 		void useExtensions();
 	public:
 		Instance(std::string appName, std::string engineName,
-			VkInstance* instance, VkInstanceCreateInfo* instanceInfo,
-			VkApplicationInfo* appInfo, std::shared_ptr<VkRenderer::ValidationLayer> validationLayer);
+			VkInstance* instance, std::shared_ptr<VkRenderer::ValidationLayer> validationLayer);
 		~Instance();
 
 		void appendExtension(const char* extensionName);

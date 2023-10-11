@@ -43,7 +43,7 @@ namespace VkRenderer {
 		VkDeviceCreateInfo m_deviceCreateInfo{};
 		QueueFamilyIndices m_physicalDeviceIndices{};
 
-		VkQueue m_graphicsQueue;
+		VkQueue* m_graphicsQueue;
 		float m_queuePriority = 1.0f;
 
 		std::shared_ptr<VkRenderer::ValidationLayer> m_validationLayer;

@@ -14,39 +14,39 @@ void VkRenderer::Instance::createInstance()
 		}
 	}
 
-	m_appInfo->sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-	m_appInfo->pApplicationName = m_appName.c_str();
-	m_appInfo->applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-	m_appInfo->pEngineName = m_engineName.c_str();
-	m_appInfo->engineVersion = VK_MAKE_VERSION(1, 0, 0);
-	m_appInfo->apiVersion = VK_API_VERSION_1_3;
+	m_appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+	m_appInfo.pApplicationName = m_appName.c_str();
+	m_appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+	m_appInfo.pEngineName = m_engineName.c_str();
+	m_appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+	m_appInfo.apiVersion = VK_API_VERSION_1_3;
 }
 
 void VkRenderer::Instance::createInfo()
 {
-	m_instanceInfo->sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-	m_instanceInfo->pApplicationInfo = m_appInfo;
+	m_instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+	m_instanceInfo.pApplicationInfo = &m_appInfo;
 }
 
 void VkRenderer::Instance::enableExtensions()
 {
 	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
-	m_instanceInfo->enabledExtensionCount = glfwExtensionCount;
-	m_instanceInfo->ppEnabledExtensionNames = glfwExtensions;
+	m_instanceInfo.enabledExtensionCount = glfwExtensionCount;
+	m_instanceInfo.ppEnabledExtensionNames = glfwExtensions;
 
 	if (m_validationLayer->isEnabled()) {
 
-		m_instanceInfo->enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-		m_instanceInfo->ppEnabledLayerNames = validationLayers.data();
+		m_instanceInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+		m_instanceInfo.ppEnabledLayerNames = validationLayers.data();
 
 		Debugger::populate(debugCreateInfo);
-		m_instanceInfo->pNext = (VkDebugUtilsMessengerCreateInfoEXT*) &debugCreateInfo;
+		m_instanceInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*) &debugCreateInfo;
 	}
 	else {
-		m_instanceInfo->enabledLayerCount = 0;
+		m_instanceInfo.enabledLayerCount = 0;
 
-		m_instanceInfo->pNext = nullptr;
+		m_instanceInfo.pNext = nullptr;
 	}
 }
 
@@ -57,7 +57,7 @@ void VkRenderer::Instance::getRequiredExtensions()
 	}
 
 	requiredExtensions.emplace_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
-	m_instanceInfo->flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+	m_instanceInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
 
 	// so it can be called without append
 }
@@ -73,8 +73,8 @@ void VkRenderer::Instance::getAvailableExtensions()
 
 void VkRenderer::Instance::useExtensions()
 {
-	m_instanceInfo->enabledExtensionCount = static_cast<uint32_t>(requiredExtensions.size());
-	m_instanceInfo->ppEnabledExtensionNames = requiredExtensions.data();
+	m_instanceInfo.enabledExtensionCount = static_cast<uint32_t>(requiredExtensions.size());
+	m_instanceInfo.ppEnabledExtensionNames = requiredExtensions.data();
 }
 
 void VkRenderer::Instance::appendExtension(const char* extensionName)
@@ -85,26 +85,27 @@ void VkRenderer::Instance::appendExtension(const char* extensionName)
 void VkRenderer::Instance::create()
 {
 	useExtensions();
-	if (vkCreateInstance(m_instanceInfo, nullptr, m_instance) != VK_SUCCESS) {
+	if (vkCreateInstance(&m_instanceInfo, nullptr, m_instance) != VK_SUCCESS) {
 		Logger::printOnce("Failed to create Vulkan Instance", MessageType::Error);
 		std::terminate();
 	}
 	else {
-		Logger::print({ "Created Instance! Application Name: ", m_appInfo->pApplicationName }, MessageType::Success);
+		Logger::print({ "Created Instance! Application Name: ", m_appInfo.pApplicationName }, MessageType::Success);
 	}
 }
 
 VkRenderer::Instance::Instance(std::string appName, std::string engineName,
-	VkInstance* instance, VkInstanceCreateInfo* instanceInfo,
-	VkApplicationInfo* appInfo, std::shared_ptr<VkRenderer::ValidationLayer> validationLayer)
+	VkInstance* instance, std::shared_ptr<VkRenderer::ValidationLayer> validationLayer)
 
-	: m_appName(appName), m_engineName(engineName), m_instance(instance),
-	m_instanceInfo(instanceInfo), m_appInfo(appInfo), m_validationLayer(validationLayer)
+	: m_appName(appName), m_engineName(engineName), m_instance(instance), m_validationLayer(validationLayer)
 {
 	createInstance();
 	createInfo();
 	enableExtensions();
 	getRequiredExtensions();
+	if (m_validationLayer->isEnabled()) {
+		appendExtension(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+	}
 }
 
 VkRenderer::Instance::~Instance()
