@@ -24,13 +24,15 @@ void VkRenderer::App::initVk()
 			&m_instance, &m_instanceInfo,
 			&m_appInfo, app_validation_layer);
 
-	if (enableValidationLayer) {
+	if (app_validation_layer->isEnabled()) {
 		app_instance->appendExtension(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 	}
 	app_instance->create();
 	app_instance->printExtensions(true, false);
+	
+	if (app_validation_layer->isEnabled()) {
+		app_debugger = std::make_unique<VkRenderer::Debugger>(app_validation_layer, &m_instance);
+	}
 
-	app_debugger = std::make_unique<VkRenderer::Debugger>(app_validation_layer, &m_instance);
-
-	app_physical_device = std::make_unique<VkRenderer::PhysicalDevise>(m_device, &m_instance);
+	app_physical_device = std::make_unique<VkRenderer::PhysicalDevice>(m_device, &m_instance);
 }

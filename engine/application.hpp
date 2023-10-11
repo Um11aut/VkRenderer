@@ -32,7 +32,7 @@ namespace VkRenderer {
 		std::shared_ptr<VkRenderer::ValidationLayer> app_validation_layer;
 
 		std::unique_ptr<VkRenderer::Instance> app_instance;
-		std::unique_ptr<VkRenderer::PhysicalDevise> app_physical_device;
+		std::unique_ptr<VkRenderer::PhysicalDevice> app_physical_device;
 		std::unique_ptr<VkRenderer::Debugger> app_debugger;
 
 	public:

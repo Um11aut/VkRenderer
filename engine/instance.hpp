@@ -40,7 +40,7 @@ namespace VkRenderer {
 		void getRequiredExtensions();
 		void getAvailableExtensions();
 
-		void updateExtensions();
+		void useExtensions();
 	public:
 		Instance(std::string appName, std::string engineName,
 			VkInstance* instance, VkInstanceCreateInfo* instanceInfo,

@@ -71,7 +71,7 @@ void VkRenderer::Instance::getAvailableExtensions()
 	vkEnumerateInstanceExtensionProperties(nullptr, &availableExtensionsCount, availibleExtensions.data());
 }
 
-void VkRenderer::Instance::updateExtensions()
+void VkRenderer::Instance::useExtensions()
 {
 	m_instanceInfo->enabledExtensionCount = static_cast<uint32_t>(requiredExtensions.size());
 	m_instanceInfo->ppEnabledExtensionNames = requiredExtensions.data();
@@ -84,7 +84,7 @@ void VkRenderer::Instance::appendExtension(const char* extensionName)
 
 void VkRenderer::Instance::create()
 {
-	updateExtensions();
+	useExtensions();
 	if (vkCreateInstance(m_instanceInfo, nullptr, m_instance) != VK_SUCCESS) {
 		Logger::printOnce("Failed to create Vulkan Instance", MessageType::Error);
 		std::terminate();
@@ -105,7 +105,6 @@ VkRenderer::Instance::Instance(std::string appName, std::string engineName,
 	createInfo();
 	enableExtensions();
 	getRequiredExtensions();
-	getAvailableExtensions();
 }
 
 VkRenderer::Instance::~Instance()
@@ -124,6 +123,7 @@ void VkRenderer::Instance::printExtensions(bool printRequired, bool printAvailab
 		}
 	}
 	if (printAvailable) {
+		getAvailableExtensions();
 		Logger::printSeparator();
 
 		Logger::printOnce("Available extensions: ", MessageType::Nothing);
