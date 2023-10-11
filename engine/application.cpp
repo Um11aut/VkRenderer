@@ -1,19 +1,19 @@
 #include "application.hpp"
 
-VkRenderer::App::App(const int w_width, const int w_height) 
+App::App(const int w_width, const int w_height) 
 	: window_width(w_width), window_height(w_height)
 {
 	initVk();
 }
 
-void VkRenderer::App::run()
+void App::run()
 {
 	while (!app_window->shouldClose() && !app_window->KeyPressed(GLFW_KEY_ESCAPE)) {
 		glfwPollEvents();
 	}
 }
 
-void VkRenderer::App::initVk()
+void App::initVk()
 {
 	app_window = std::make_shared<VkRenderer::Window>(window_width, window_height);
 	app_validation_layer = std::make_shared<VkRenderer::ValidationLayer>(enableValidationLayer);
@@ -34,5 +34,5 @@ void VkRenderer::App::initVk()
 		app_debugger = std::make_unique<VkRenderer::Debugger>(app_validation_layer, &m_instance);
 	}
 
-	app_physical_device = std::make_unique<VkRenderer::PhysicalDevice>(m_device, &m_instance);
+	app_device = std::make_unique<VkRenderer::Device>(&m_physicalDevice, &m_device, m_instance, app_validation_layer);
 }

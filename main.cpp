@@ -2,7 +2,7 @@
 #include "engine/application.hpp"
 
 int main() {
-	VkRenderer::App renderer(1920, 1080);
+	App app(800, 600);
 
-	renderer.run();
+	app.run();
 }

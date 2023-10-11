@@ -1,6 +1,6 @@
-#include "physical_device.hpp"
+#include "device.hpp"
 
-bool VkRenderer::PhysicalDevice::isDeviceSuitable(VkPhysicalDevice device)
+bool VkRenderer::Device::isDeviceSuitable(VkPhysicalDevice device)
 {
 	VkPhysicalDeviceProperties deviceProperties;
 	VkPhysicalDeviceFeatures deviceFeatures;
@@ -11,23 +11,60 @@ bool VkRenderer::PhysicalDevice::isDeviceSuitable(VkPhysicalDevice device)
 	return deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && deviceFeatures.geometryShader;
 }
 
-void VkRenderer::PhysicalDevice::getDeviceProperties()
+void VkRenderer::Device::getDeviceProperties()
 {
-	if (m_device != nullptr) {
-		vkGetPhysicalDeviceProperties(*m_device, &m_deviceProperties);
+	if (m_physicalDevice != nullptr) {
+		vkGetPhysicalDeviceProperties(*m_physicalDevice, &m_deviceProperties);
 	}
 }
 
-void VkRenderer::PhysicalDevice::getDeviceFeatures()
+void VkRenderer::Device::getDeviceFeatures()
 {
-	if (m_device != nullptr) {
-		vkGetPhysicalDeviceFeatures(*m_device, &m_deviceFeatures);
+	if (m_physicalDevice != nullptr) {
+		vkGetPhysicalDeviceFeatures(*m_physicalDevice, &m_deviceFeatures);
 	}
 }
 
-VkRenderer::PhysicalDevice::PhysicalDevice(
-	VkPhysicalDevice device, VkInstance* instance)
-	: m_device(&device), m_instance(instance)
+void VkRenderer::Device::createLogicalDevice()
+{
+	if (m_physicalDevice == nullptr) {
+		return;
+	}
+
+	m_physicalDeviceIndices = findSupportedQueueFamilies(*m_physicalDevice);
+
+	m_queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+	m_queueCreateInfo.queueFamilyIndex = m_physicalDeviceIndices.graphicsFamily.value();
+	m_queueCreateInfo.queueCount = 1;
+	m_queueCreateInfo.pQueuePriorities = &m_queuePriority;
+	
+	m_deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+	m_deviceCreateInfo.pQueueCreateInfos = &m_queueCreateInfo;
+	m_deviceCreateInfo.queueCreateInfoCount = 1;
+
+	getDeviceFeatures();
+	m_deviceCreateInfo.pEnabledFeatures = &m_deviceFeatures;
+
+	m_deviceCreateInfo.enabledExtensionCount = 0;
+	if (m_validationLayer->isEnabled()) {
+		m_deviceCreateInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+		m_deviceCreateInfo.ppEnabledLayerNames = validationLayers.data();
+	}
+	else {
+		m_deviceCreateInfo.enabledLayerCount = 0;
+	}
+
+	if (vkCreateDevice(*m_physicalDevice, &m_deviceCreateInfo, nullptr, m_device) != VK_SUCCESS) {
+		Logger::printOnce("failed to create logical Device", MessageType::Error);
+	}
+	else {
+		Logger::printOnce("Created Logical Device!", MessageType::Success);
+	}
+}
+
+VkRenderer::Device::Device(
+	VkPhysicalDevice* physicalDevice, VkDevice* device, VkInstance instance, std::shared_ptr<VkRenderer::ValidationLayer> validationLayer)
+	: m_physicalDevice(physicalDevice), m_device(device), m_instance(&instance), m_validationLayer(validationLayer)
 {
 	vkEnumeratePhysicalDevices(*m_instance, &m_device_count, nullptr);
 	if (m_device_count == 0) {
@@ -40,9 +77,11 @@ VkRenderer::PhysicalDevice::PhysicalDevice(
 	vkEnumeratePhysicalDevices(*m_instance, &m_device_count, m_devices.data());
 
 	pickDevice();
+
+	createLogicalDevice();
 }
 
-QueueFamilyIndices VkRenderer::PhysicalDevice::findSupportedQueueFamilies(VkPhysicalDevice device)
+QueueFamilyIndices VkRenderer::Device::findSupportedQueueFamilies(VkPhysicalDevice device)
 {
 	QueueFamilyIndices indicies;
 	uint32_t queueFamilyCount;
@@ -70,7 +109,7 @@ QueueFamilyIndices VkRenderer::PhysicalDevice::findSupportedQueueFamilies(VkPhys
 	return indicies;
 }
 
-int VkRenderer::PhysicalDevice::rateDevice(VkPhysicalDevice device)
+int VkRenderer::Device::rateDevice(VkPhysicalDevice device)
 {
 	VkPhysicalDeviceProperties deviceProperties;
 	VkPhysicalDeviceFeatures deviceFeatures;
@@ -92,7 +131,7 @@ int VkRenderer::PhysicalDevice::rateDevice(VkPhysicalDevice device)
 	return score;
 }
 
-void VkRenderer::PhysicalDevice::pickDevice()
+void VkRenderer::Device::pickDevice()
 {
 	std::multimap<int, VkPhysicalDevice> candidates;
 
@@ -112,9 +151,9 @@ void VkRenderer::PhysicalDevice::pickDevice()
 	}
 
 	if (candidates.rbegin()->first > 0) {
-		*m_device = candidates.rbegin()->second;
+		*m_physicalDevice = candidates.rbegin()->second;
 		getDeviceProperties();
-		Logger::print({ "Successfully picked GPU: ", m_deviceProperties.deviceName}, MessageType::Success);
+		Logger::print({ "picked GPU: ", m_deviceProperties.deviceName}, MessageType::Success);
 	}
 	else {
 		Logger::printOnce("Failed to pick suitable GPU", MessageType::Error);
@@ -122,7 +161,7 @@ void VkRenderer::PhysicalDevice::pickDevice()
 	}
 }
 
-VkRenderer::PhysicalDevice::~PhysicalDevice()
+VkRenderer::Device::~Device()
 {
-
+	vkDestroyDevice(*m_device, nullptr);
 }
