@@ -22,6 +22,7 @@ namespace VkRenderer {
 
 		inline int GetWidth() const { return m_width; }
 		inline int GetHeight() const { return m_height; }
+		inline GLFWwindow* getWindow() { return m_window; }
 
 		bool KeyPressed(int key);
 	};

@@ -6,6 +6,7 @@
 #include "debugger.hpp"
 #include "logger.hpp"
 #include "device.hpp"
+#include "surface.hpp"
 #include <memory>
 
 #ifdef NDEBUG
@@ -27,6 +28,7 @@ namespace VkRenderer {
 		VkInstance m_instance;
 		VkPhysicalDevice m_physicalDevice;
 		VkDevice m_device;
+		VkSurfaceKHR m_surface;
 
 		AppInfo m_info;
 
@@ -39,6 +41,7 @@ namespace VkRenderer {
 		std::unique_ptr<VkRenderer::Instance> app_instance;
 		std::unique_ptr<VkRenderer::Debugger> app_debugger;
 		std::unique_ptr<VkRenderer::Device> app_device;
+		std::unique_ptr<VkRenderer::Surface> app_surface;
 
 	public:
 		Renderer(AppInfo info);

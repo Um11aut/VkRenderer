@@ -29,4 +29,6 @@ void VkRenderer::Renderer::initVk()
 	}
 
 	app_device = std::make_unique<VkRenderer::Device>(&m_physicalDevice, &m_device, m_instance, app_validation_layer);
+
+	app_surface = std::make_unique<VkRenderer::Surface>(&m_surface, app_window, m_instance);
 }

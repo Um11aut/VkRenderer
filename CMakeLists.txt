@@ -20,7 +20,8 @@ add_executable (VkRenderer "main.cpp" "engine/entry.hpp"
 "engine/logger.cpp" "engine/logger.hpp" 
 "engine/validation_layers.cpp" "engine/validation_layers.hpp"
 "engine/debugger.hpp" "engine/debugger.cpp" 
-"engine/device.hpp" "engine/device.cpp")
+"engine/device.hpp" "engine/device.cpp"
+"engine/surface.hpp" "engine/surface.cpp")
 
 add_subdirectory(deps/glfw)
 add_subdirectory(deps/glm)
