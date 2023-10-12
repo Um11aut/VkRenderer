@@ -34,7 +34,7 @@ namespace VkRenderer {
 	public:
 		Debugger(
 			std::shared_ptr<VkRenderer::ValidationLayer> validation_layer,
-			VkInstance* instance);
+			VkInstance& instance);
 		~Debugger();
 
 		static void populate(VkDebugUtilsMessengerCreateInfoEXT& createInfo);

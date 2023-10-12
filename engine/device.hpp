@@ -18,25 +18,14 @@ namespace {
 namespace VkRenderer {
 	class Device {
 	private:
+		VkPhysicalDevice* m_physicalDevice = VK_NULL_HANDLE;
+
 		VkPhysicalDeviceProperties m_deviceProperties;
 		VkPhysicalDeviceFeatures m_deviceFeatures;
 
-		VkPhysicalDevice* m_physicalDevice = VK_NULL_HANDLE;
-
-		void getDeviceProperties();
-		void getDeviceFeatures();
-
 		VkInstance* m_instance;
 
-		uint32_t m_device_count;
-		std::vector<VkPhysicalDevice> m_devices;
-
-		QueueFamilyIndices findSupportedQueueFamilies(VkPhysicalDevice device);
-
-		bool isDeviceSuitable(VkPhysicalDevice device);
-
-		int rateDevice(VkPhysicalDevice device);
-		void pickDevice();
+		std::vector<VkPhysicalDevice> m_availableDevices;
 
 		VkDevice* m_device;
 		VkDeviceQueueCreateInfo m_queueCreateInfo{};
@@ -49,6 +38,13 @@ namespace VkRenderer {
 		std::shared_ptr<VkRenderer::ValidationLayer> m_validationLayer;
 
 		void createLogicalDevice();
+		void getDeviceProperties();
+		void getDeviceFeatures();
+		QueueFamilyIndices findSupportedQueueFamilies(VkPhysicalDevice device);
+		bool isDeviceSuitable(VkPhysicalDevice device);
+
+		int rateDevice(VkPhysicalDevice device);
+		void pickDevice();
 	public:
 		Device(VkPhysicalDevice* physicalDevice,
 			VkDevice* device,

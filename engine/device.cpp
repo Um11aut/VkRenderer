@@ -66,15 +66,16 @@ VkRenderer::Device::Device(
 	VkPhysicalDevice* physicalDevice, VkDevice* device, VkInstance instance, std::shared_ptr<VkRenderer::ValidationLayer> validationLayer)
 	: m_physicalDevice(physicalDevice), m_device(device), m_instance(&instance), m_validationLayer(validationLayer)
 {
-	vkEnumeratePhysicalDevices(*m_instance, &m_device_count, nullptr);
-	if (m_device_count == 0) {
+	uint32_t device_count;
+	vkEnumeratePhysicalDevices(*m_instance, &device_count, nullptr);
+	if (device_count == 0) {
 		Logger::printOnce("There are no suitable physical device to load!", MessageType::Error);
 		std::terminate();
 	}
 
-	m_devices.resize(m_device_count);
+	m_availableDevices.resize(device_count);
 
-	vkEnumeratePhysicalDevices(*m_instance, &m_device_count, m_devices.data());
+	vkEnumeratePhysicalDevices(*m_instance, &device_count, m_availableDevices.data());
 
 	pickDevice();
 
@@ -123,6 +124,7 @@ int VkRenderer::Device::rateDevice(VkPhysicalDevice device)
 	}
 
 	score += deviceProperties.limits.maxImageDimension2D;
+	score += deviceProperties.limits.maxImageDimension3D;
 
 	if (!deviceFeatures.geometryShader) {
 		return 0;
@@ -135,7 +137,7 @@ void VkRenderer::Device::pickDevice()
 {
 	std::multimap<int, VkPhysicalDevice> candidates;
 
-	for (const auto& device : m_devices) {
+	for (const auto& device : m_availableDevices) {
 		candidates.insert(std::make_pair(rateDevice(device), device));
 	}
 
@@ -153,7 +155,7 @@ void VkRenderer::Device::pickDevice()
 	if (candidates.rbegin()->first > 0) {
 		*m_physicalDevice = candidates.rbegin()->second;
 		getDeviceProperties();
-		Logger::print({ "picked GPU: ", m_deviceProperties.deviceName}, MessageType::Success);
+		Logger::print({ "Picked GPU!: ", m_deviceProperties.deviceName}, MessageType::Success);
 	}
 	else {
 		Logger::printOnce("Failed to pick suitable GPU", MessageType::Error);

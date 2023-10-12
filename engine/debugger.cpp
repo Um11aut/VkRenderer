@@ -46,9 +46,9 @@ void VkRenderer::Debugger::populate(VkDebugUtilsMessengerCreateInfoEXT& createIn
 
 VkRenderer::Debugger::Debugger(
 	std::shared_ptr<VkRenderer::ValidationLayer> validation_layer,
-	VkInstance* instance)
+	VkInstance& instance)
 	
-	: m_validationLayer(validation_layer), m_instance(instance)
+	: m_validationLayer(validation_layer), m_instance(&instance)
 {
 	setupDebugMessenger();
 }

@@ -7,6 +7,7 @@
 #include "logger.hpp"
 #include "device.hpp"
 #include "surface.hpp"
+#include "extra/extra.hpp"
 #include <memory>
 
 #ifdef NDEBUG
@@ -16,13 +17,6 @@
 #endif
 
 namespace VkRenderer {
-	struct AppInfo {
-		std::string appName;
-		std::string engineName;
-		int windowWidth, windowHeight;
-		bool GUI;
-	};
-
 	class Renderer {
 	private:
 		VkInstance m_instance;
@@ -30,7 +24,7 @@ namespace VkRenderer {
 		VkDevice m_device;
 		VkSurfaceKHR m_surface;
 
-		AppInfo m_info;
+		Extra::AppInfo m_info;
 
 		void initVk();
 
@@ -44,7 +38,7 @@ namespace VkRenderer {
 		std::unique_ptr<VkRenderer::Surface> app_surface;
 
 	public:
-		Renderer(AppInfo info);
+		Renderer(Extra::AppInfo info);
 
 		void run();
 	};

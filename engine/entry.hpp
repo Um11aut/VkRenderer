@@ -1,10 +1,11 @@
 #include "renderer.hpp"
+#include "extra/extra.hpp"
 
 namespace Application {
 	VkRenderer::Renderer* renderer;
-	VkRenderer::AppInfo info;
+	Extra::AppInfo info;
 
-	void createApplication() {
+	void create() {
 		info.appName = "Wolfram";
 		info.engineName = "Wolfram";
 		info.GUI = true;

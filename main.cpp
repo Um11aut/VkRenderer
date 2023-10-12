@@ -2,7 +2,7 @@
 #include "engine/entry.hpp"
 
 int main() {
-	Application::createApplication();
+	Application::create();
 
 	Application::run();
 }
