@@ -1,7 +1,9 @@
 #include "renderer.hpp"
+#include "window.hpp"
 #include "extra/extra.hpp"
 
 namespace Application {
+	VkRenderer::Window* window;
 	VkRenderer::Renderer* renderer;
 	Extra::AppInfo info;
 
@@ -12,7 +14,8 @@ namespace Application {
 		info.windowWidth = 1920;
 		info.windowHeight = 1080;
 
-		renderer = new VkRenderer::Renderer(info);
+		window = new VkRenderer::Window(info);
+		renderer = new VkRenderer::Renderer(window);
 	}
 
 	void run() {

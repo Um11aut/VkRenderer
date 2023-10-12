@@ -2,6 +2,7 @@
 
 #include <glfw/glfw3.h>
 #include <string>
+#include "extra/extra.hpp"
 
 namespace VkRenderer {
 	class Window {
@@ -9,7 +10,7 @@ namespace VkRenderer {
 		GLFWwindow* m_window;
 		int m_width, m_height;
 
-		const std::string m_appName;
+		Extra::AppInfo m_info;
 
 		Window(const Window&) = delete;
 		Window operator=(const Window&) = delete;
@@ -17,12 +18,13 @@ namespace VkRenderer {
 	public:
 		bool shouldClose();
 
-		explicit Window(int width, int height, std::string appName);
+		explicit Window(Extra::AppInfo& info);
 		~Window();
 
 		inline int GetWidth() const { return m_width; }
 		inline int GetHeight() const { return m_height; }
 		inline GLFWwindow* getWindow() { return m_window; }
+		inline Extra::AppInfo getInfo() { return m_info; }
 
 		bool KeyPressed(int key);
 	};

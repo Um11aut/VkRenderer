@@ -19,14 +19,7 @@
 namespace VkRenderer {
 	class Renderer {
 	private:
-		VkInstance m_instance;
-		VkPhysicalDevice m_physicalDevice;
-		VkDevice m_device;
-		VkSurfaceKHR m_surface;
-		VkQueue m_presentQueue;
-		VkQueue m_graphicsQueue;
-
-		Extra::AppInfo m_info;
+		Extra::VkVars m_variables;
 
 		void initVk();
 
@@ -40,7 +33,7 @@ namespace VkRenderer {
 		std::unique_ptr<VkRenderer::Surface> app_surface;
 
 	public:
-		Renderer(Extra::AppInfo info);
+		Renderer(Window* window);
 
 		void run();
 	};

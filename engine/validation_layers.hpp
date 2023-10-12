@@ -17,8 +17,6 @@ namespace VkRenderer {
 
 		uint32_t m_layerCount;
 		std::vector<VkLayerProperties> m_availableLayers;
-
-		Logger logger;
 	public:
 		ValidationLayer(bool ValidationLayerEnabled);
 

@@ -1,9 +1,9 @@
 #include "surface.hpp"
 
-VkRenderer::Surface::Surface(VkSurfaceKHR* surface, std::shared_ptr<VkRenderer::Window>& window, VkInstance& instance)
-    : m_surface(surface), m_window(window), m_instance(&instance)
+VkRenderer::Surface::Surface(Extra::VkVars* vars, std::shared_ptr<VkRenderer::Window>& window)
+    : m_vars(vars), m_window(window)
 {
-    if (glfwCreateWindowSurface(*m_instance, window->getWindow(), nullptr, surface)) {
+    if (glfwCreateWindowSurface(m_vars->m_instance, window->getWindow(), nullptr, &m_vars->m_surface)) {
         Logger::printOnce("Failed to create Window Surface", MessageType::Error);
     }
     else {
@@ -13,5 +13,5 @@ VkRenderer::Surface::Surface(VkSurfaceKHR* surface, std::shared_ptr<VkRenderer::
 
 VkRenderer::Surface::~Surface()
 {
-    vkDestroySurfaceKHR(*m_instance, *m_surface, nullptr);
+    vkDestroySurfaceKHR(m_vars->m_instance, m_vars->m_surface, nullptr);
 }

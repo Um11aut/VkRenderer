@@ -13,25 +13,25 @@ bool VkRenderer::Device::isDeviceSuitable(VkPhysicalDevice device)
 
 void VkRenderer::Device::getDeviceProperties()
 {
-	if (m_physicalDevice != nullptr) {
-		vkGetPhysicalDeviceProperties(*m_physicalDevice, &m_deviceProperties);
+	if (&m_vars->m_physicalDevice != nullptr) {
+		vkGetPhysicalDeviceProperties(m_vars->m_physicalDevice, &m_deviceProperties);
 	}
 }
 
 void VkRenderer::Device::getDeviceFeatures()
 {
-	if (m_physicalDevice != nullptr) {
-		vkGetPhysicalDeviceFeatures(*m_physicalDevice, &m_deviceFeatures);
+	if (&m_vars->m_physicalDevice != nullptr) {
+		vkGetPhysicalDeviceFeatures(m_vars->m_physicalDevice, &m_deviceFeatures);
 	}
 }
 
 void VkRenderer::Device::createLogicalDevice()
 {
-	if (m_physicalDevice == nullptr) {
+	if (&m_vars->m_physicalDevice == nullptr) {
 		return;
 	}
 
-	m_physicalDeviceIndices = findSupportedQueueFamilies(*m_physicalDevice);
+	m_physicalDeviceIndices = findSupportedQueueFamilies(m_vars->m_physicalDevice);
 
 	uniqueQueueFamilies = { m_physicalDeviceIndices.graphicsFamily.has_value(), m_physicalDeviceIndices.presentFamily.value() };
 
@@ -62,7 +62,7 @@ void VkRenderer::Device::createLogicalDevice()
 		m_deviceCreateInfo.enabledLayerCount = 0;
 	}
 
-	if (vkCreateDevice(*m_physicalDevice, &m_deviceCreateInfo, nullptr, m_device) != VK_SUCCESS) {
+	if (vkCreateDevice(m_vars->m_physicalDevice, &m_deviceCreateInfo, nullptr, &m_vars->m_device) != VK_SUCCESS) {
 		Logger::printOnce("failed to create logical Device", MessageType::Error);
 	}
 	else {
@@ -70,16 +70,16 @@ void VkRenderer::Device::createLogicalDevice()
 	}
 
 
-	vkGetDeviceQueue(*m_device, m_physicalDeviceIndices.presentFamily.value(), 0, m_presentQueue);
-	vkGetDeviceQueue(*m_device, m_physicalDeviceIndices.graphicsFamily.value(), 0, m_graphicsQueue);
+	vkGetDeviceQueue(m_vars->m_device, m_physicalDeviceIndices.presentFamily.value(), 0, &m_vars->m_presentQueue);
+	vkGetDeviceQueue(m_vars->m_device, m_physicalDeviceIndices.graphicsFamily.value(), 0, &m_vars->m_graphicsQueue);
 }
 
 VkRenderer::Device::Device(
-	VkPhysicalDevice* physicalDevice, VkDevice* device, VkQueue* presentQueue, VkQueue* graphicsQueue, VkSurfaceKHR* surface, VkInstance instance, std::shared_ptr<VkRenderer::ValidationLayer> validationLayer)
-	: m_physicalDevice(physicalDevice), m_device(device), m_instance(&instance), m_validationLayer(validationLayer), m_presentQueue(presentQueue), m_graphicsQueue(graphicsQueue), m_surface(surface)
+	Extra::VkVars* vars, std::shared_ptr<VkRenderer::ValidationLayer> validationLayer)
+	: m_vars(vars), m_validationLayer(validationLayer)
 {
 	uint32_t device_count;
-	vkEnumeratePhysicalDevices(*m_instance, &device_count, nullptr);
+	vkEnumeratePhysicalDevices(m_vars->m_instance, &device_count, nullptr);
 	if (device_count == 0) {
 		Logger::printOnce("There are no suitable physical device to load!", MessageType::Error);
 		std::terminate();
@@ -87,7 +87,7 @@ VkRenderer::Device::Device(
 
 	m_availableDevices.resize(device_count);
 
-	vkEnumeratePhysicalDevices(*m_instance, &device_count, m_availableDevices.data());
+	vkEnumeratePhysicalDevices(m_vars->m_instance, &device_count, m_availableDevices.data());
 
 	pickDevice();
 
@@ -113,7 +113,7 @@ Extra::QueueFamilyIndices VkRenderer::Device::findSupportedQueueFamilies(VkPhysi
 		}
 		
 		VkBool32 presentSupport = false;
-		vkGetPhysicalDeviceSurfaceSupportKHR(device, count, *m_surface, &presentSupport);
+		vkGetPhysicalDeviceSurfaceSupportKHR(device, count, m_vars->m_surface, &presentSupport);
 
 		if (presentSupport) {
 			indicies.presentFamily = count;
@@ -171,7 +171,7 @@ void VkRenderer::Device::pickDevice()
 	}
 
 	if (candidates.rbegin()->first > 0) {
-		*m_physicalDevice = candidates.rbegin()->second;
+		m_vars->m_physicalDevice = candidates.rbegin()->second;
 		getDeviceProperties();
 		Logger::print({ "Picked GPU!: ", m_deviceProperties.deviceName}, MessageType::Success);
 	}
@@ -183,5 +183,5 @@ void VkRenderer::Device::pickDevice()
 
 VkRenderer::Device::~Device()
 {
-	vkDestroyDevice(*m_device, nullptr);
+	vkDestroyDevice(m_vars->m_device, nullptr);
 }

@@ -3,16 +3,16 @@
 #include <memory>
 #include "window.hpp"
 #include "logger.hpp"
+#include "extra/extra.hpp"
 
 namespace VkRenderer {
     class Surface {
     private:
-        VkSurfaceKHR* m_surface;
-        VkInstance* m_instance;
+        Extra::VkVars* m_vars;
 
         std::shared_ptr<VkRenderer::Window> m_window; // so window is bound on a surface
     public:
-        Surface(VkSurfaceKHR* surface, std::shared_ptr<VkRenderer::Window>& window, VkInstance& instance);
+        Surface(Extra::VkVars* vars, std::shared_ptr<VkRenderer::Window>& window);
         ~Surface();
     };
 }
