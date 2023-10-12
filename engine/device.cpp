@@ -33,19 +33,27 @@ void VkRenderer::Device::createLogicalDevice()
 
 	m_physicalDeviceIndices = findSupportedQueueFamilies(*m_physicalDevice);
 
-	m_queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-	m_queueCreateInfo.queueFamilyIndex = m_physicalDeviceIndices.graphicsFamily.value();
-	m_queueCreateInfo.queueCount = 1;
-	m_queueCreateInfo.pQueuePriorities = &m_queuePriority;
+	uniqueQueueFamilies = { m_physicalDeviceIndices.graphicsFamily.has_value(), m_physicalDeviceIndices.presentFamily.value() };
+
+	float m_queuePriority = 1.0f;
+	for (uint32_t queueFamily : uniqueQueueFamilies) {
+		VkDeviceQueueCreateInfo queueCreateInfo{};
+		queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+		queueCreateInfo.queueFamilyIndex = queueFamily;
+		queueCreateInfo.queueCount = 1;
+		queueCreateInfo.pQueuePriorities = &m_queuePriority;
+		m_queueCreateInfos.push_back(queueCreateInfo);
+	}
 	
 	m_deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-	m_deviceCreateInfo.pQueueCreateInfos = &m_queueCreateInfo;
-	m_deviceCreateInfo.queueCreateInfoCount = 1;
+	m_deviceCreateInfo.queueCreateInfoCount = static_cast<uint32_t>(m_queueCreateInfos.size());
+	m_deviceCreateInfo.pQueueCreateInfos = m_queueCreateInfos.data();
 
 	getDeviceFeatures();
 	m_deviceCreateInfo.pEnabledFeatures = &m_deviceFeatures;
 
 	m_deviceCreateInfo.enabledExtensionCount = 0;
+
 	if (m_validationLayer->isEnabled()) {
 		m_deviceCreateInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
 		m_deviceCreateInfo.ppEnabledLayerNames = validationLayers.data();
@@ -60,11 +68,15 @@ void VkRenderer::Device::createLogicalDevice()
 	else {
 		Logger::printOnce("Created Logical Device!", MessageType::Success);
 	}
+
+
+	vkGetDeviceQueue(*m_device, m_physicalDeviceIndices.presentFamily.value(), 0, m_presentQueue);
+	vkGetDeviceQueue(*m_device, m_physicalDeviceIndices.graphicsFamily.value(), 0, m_graphicsQueue);
 }
 
 VkRenderer::Device::Device(
-	VkPhysicalDevice* physicalDevice, VkDevice* device, VkInstance instance, std::shared_ptr<VkRenderer::ValidationLayer> validationLayer)
-	: m_physicalDevice(physicalDevice), m_device(device), m_instance(&instance), m_validationLayer(validationLayer)
+	VkPhysicalDevice* physicalDevice, VkDevice* device, VkQueue* presentQueue, VkQueue* graphicsQueue, VkSurfaceKHR* surface, VkInstance instance, std::shared_ptr<VkRenderer::ValidationLayer> validationLayer)
+	: m_physicalDevice(physicalDevice), m_device(device), m_instance(&instance), m_validationLayer(validationLayer), m_presentQueue(presentQueue), m_graphicsQueue(graphicsQueue), m_surface(surface)
 {
 	uint32_t device_count;
 	vkEnumeratePhysicalDevices(*m_instance, &device_count, nullptr);
@@ -82,9 +94,9 @@ VkRenderer::Device::Device(
 	createLogicalDevice();
 }
 
-QueueFamilyIndices VkRenderer::Device::findSupportedQueueFamilies(VkPhysicalDevice device)
+Extra::QueueFamilyIndices VkRenderer::Device::findSupportedQueueFamilies(VkPhysicalDevice device)
 {
-	QueueFamilyIndices indicies;
+	Extra::QueueFamilyIndices indicies;
 	uint32_t queueFamilyCount;
 
 	vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
@@ -99,8 +111,15 @@ QueueFamilyIndices VkRenderer::Device::findSupportedQueueFamilies(VkPhysicalDevi
 		if (queueFamilie.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
 			indicies.graphicsFamily = count;
 		}
+		
+		VkBool32 presentSupport = false;
+		vkGetPhysicalDeviceSurfaceSupportKHR(device, count, *m_surface, &presentSupport);
 
-		if (indicies.graphicsFamily.has_value()) {
+		if (presentSupport) {
+			indicies.presentFamily = count;
+		}
+
+		if (indicies.graphicsFamily.has_value() && indicies.presentFamily.has_value()) {
 			break;
 		}
 
@@ -141,7 +160,6 @@ void VkRenderer::Device::pickDevice()
 		candidates.insert(std::make_pair(rateDevice(device), device));
 	}
 
-	Logger::printSeparator();
 	for (const auto& candidate : candidates) {
 		if (!findSupportedQueueFamilies(candidate.second).graphicsFamily.has_value()) {
 			continue;

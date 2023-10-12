@@ -5,15 +5,11 @@
 #include <string>
 #include <optional>
 #include <memory>
+#include <set>
 
 #include "logger.hpp"
 #include "validation_layers.hpp"
-
-namespace {
-	struct QueueFamilyIndices {
-		std::optional<uint32_t> graphicsFamily;
-	};
-}
+#include "extra/extra.hpp"
 
 namespace VkRenderer {
 	class Device {
@@ -28,19 +24,25 @@ namespace VkRenderer {
 		std::vector<VkPhysicalDevice> m_availableDevices;
 
 		VkDevice* m_device;
-		VkDeviceQueueCreateInfo m_queueCreateInfo{};
 		VkDeviceCreateInfo m_deviceCreateInfo{};
-		QueueFamilyIndices m_physicalDeviceIndices{};
 
-		VkQueue* m_graphicsQueue;
-		float m_queuePriority = 1.0f;
+		Extra::QueueFamilyIndices m_physicalDeviceIndices{};
+
 
 		std::shared_ptr<VkRenderer::ValidationLayer> m_validationLayer;
+
+		VkQueue* m_presentQueue;
+		VkQueue* m_graphicsQueue;
+		VkSurfaceKHR* m_surface;
+		
+		std::vector<VkDeviceQueueCreateInfo> m_queueCreateInfos;
+		std::set<uint32_t> uniqueQueueFamilies;
+
 
 		void createLogicalDevice();
 		void getDeviceProperties();
 		void getDeviceFeatures();
-		QueueFamilyIndices findSupportedQueueFamilies(VkPhysicalDevice device);
+		Extra::QueueFamilyIndices findSupportedQueueFamilies(VkPhysicalDevice device);
 		bool isDeviceSuitable(VkPhysicalDevice device);
 
 		int rateDevice(VkPhysicalDevice device);
@@ -48,6 +50,9 @@ namespace VkRenderer {
 	public:
 		Device(VkPhysicalDevice* physicalDevice,
 			VkDevice* device,
+			VkQueue* presentQueue,
+			VkQueue* graphicsQueue,
+			VkSurfaceKHR* surface,
 			VkInstance instance,
 			std::shared_ptr<VkRenderer::ValidationLayer> validationLayer);
 		~Device();

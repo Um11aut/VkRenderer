@@ -1,6 +1,6 @@
 #include "surface.hpp"
 
-VkRenderer::Surface::Surface(VkSurfaceKHR* surface, std::shared_ptr<VkRenderer::Window> window, VkInstance& instance)
+VkRenderer::Surface::Surface(VkSurfaceKHR* surface, std::shared_ptr<VkRenderer::Window>& window, VkInstance& instance)
     : m_surface(surface), m_window(window), m_instance(&instance)
 {
     if (glfwCreateWindowSurface(*m_instance, window->getWindow(), nullptr, surface)) {

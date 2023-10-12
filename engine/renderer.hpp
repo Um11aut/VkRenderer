@@ -23,6 +23,8 @@ namespace VkRenderer {
 		VkPhysicalDevice m_physicalDevice;
 		VkDevice m_device;
 		VkSurfaceKHR m_surface;
+		VkQueue m_presentQueue;
+		VkQueue m_graphicsQueue;
 
 		Extra::AppInfo m_info;
 

@@ -16,26 +16,50 @@ void VkRenderer::Renderer::run()
 void VkRenderer::Renderer::initVk()
 {
 	// So basically the initializing part is make in Constructor. Destructor is automatically called by smart pointers when needed
-	app_window = std::make_shared<VkRenderer::Window>(m_info.windowWidth, m_info.windowHeight, m_info.appName);
+	app_window = std::make_shared<VkRenderer::Window>(
+		m_info.windowWidth,
+		m_info.windowHeight,
+		m_info.appName
+	);
 	// Validation Layer(for errors)
 	app_validation_layer = std::make_shared<VkRenderer::ValidationLayer>(enableValidationLayer);
 
 	// Create Application Instance
 	app_instance = std::make_unique<VkRenderer::Instance>(
-		m_info.appName, m_info.engineName, &m_instance, app_validation_layer);
+		m_info.appName,
+		m_info.engineName,
+		&m_instance,
+		app_validation_layer
+	);
 	// If we want to append extension app_instance->appendExtension(.....);
 	app_instance->create(); // therefore i need to have a create function
 
 	app_instance->printExtensions(true, false); // required, available
+	Logger::printSeparator();
 	
 	// Intializing debugger for our whole program
 	if (app_validation_layer->isEnabled()) {
-		app_debugger = std::make_unique<VkRenderer::Debugger>(app_validation_layer, m_instance);
+		app_debugger = std::make_unique<VkRenderer::Debugger>(
+			app_validation_layer,
+			m_instance
+		);
 	}
+	// creating Window surface
+	app_surface = std::make_unique<VkRenderer::Surface>(
+		&m_surface,
+		app_window,
+		m_instance
+	);
 
 	// Creating physical and logical Device
-	app_device = std::make_unique<VkRenderer::Device>(&m_physicalDevice, &m_device, m_instance, app_validation_layer);
+	app_device = std::make_unique<VkRenderer::Device>(
+		&m_physicalDevice,
+		&m_device,
+		&m_presentQueue,
+		&m_graphicsQueue,
+		&m_surface,
+		m_instance,
+		app_validation_layer
+	);
 
-	// creating Window surface
-	app_surface = std::make_unique<VkRenderer::Surface>(&m_surface, app_window, m_instance);
 }
