@@ -21,16 +21,24 @@ namespace VkRenderer {
 		Extra::VkVars* m_vars;
 
 		VkPresentModeKHR m_presentMode{};
-		VkSwapchainCreateInfoKHR createInfo{};
+		VkSwapchainCreateInfoKHR m_createInfo{};
 		uint32_t imageCount = 0;
 
 		std::shared_ptr<VkRenderer::Window> m_window;
+
+		std::vector<VkImage> m_images;
+		std::vector<VkImageView> m_imageViews;
+
+		VkFormat m_imageFormat;
+		VkExtent2D m_swapChainExtent;
 
 		SwapChainDetails getSwapChainSupportDetails();
 
 		VkSurfaceFormatKHR getSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& formats);
 		VkExtent2D getSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 		VkPresentModeKHR getSwapPresentMode(const std::vector<VkPresentModeKHR>& presentModes);
+
+		void createImageViews();
 	public:
 		SwapChain(Extra::VkVars* vars, std::shared_ptr<VkRenderer::Window> window);
 
