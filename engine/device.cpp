@@ -25,15 +25,21 @@ void VkRenderer::Device::getDeviceFeatures()
 	}
 }
 
-void VkRenderer::Device::createLogicalDevice()
+void VkRenderer::Device::appendExtension(const char* extensionName)
 {
+	m_deviceExtensions.push_back(extensionName);
+}
+
+void VkRenderer::Device::create()
+{
+
 	if (&m_vars->m_physicalDevice == nullptr) {
 		return;
 	}
 
-	m_physicalDeviceIndices = findSupportedQueueFamilies(m_vars->m_physicalDevice);
+	m_physicalDeviceIndices = findSupportedQueueFamilies(m_vars->m_physicalDevice, m_vars->m_surface);
 
-	uniqueQueueFamilies = { m_physicalDeviceIndices.graphicsFamily.has_value(), m_physicalDeviceIndices.presentFamily.value() };
+	uniqueQueueFamilies = { m_physicalDeviceIndices.graphicsFamily.value(), m_physicalDeviceIndices.presentFamily.value() };
 
 	float m_queuePriority = 1.0f;
 	for (uint32_t queueFamily : uniqueQueueFamilies) {
@@ -52,7 +58,8 @@ void VkRenderer::Device::createLogicalDevice()
 	getDeviceFeatures();
 	m_deviceCreateInfo.pEnabledFeatures = &m_deviceFeatures;
 
-	m_deviceCreateInfo.enabledExtensionCount = 0;
+	m_deviceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(m_deviceExtensions.size());
+	m_deviceCreateInfo.ppEnabledExtensionNames = m_deviceExtensions.data();
 
 	if (m_validationLayer->isEnabled()) {
 		m_deviceCreateInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
@@ -90,11 +97,9 @@ VkRenderer::Device::Device(
 	vkEnumeratePhysicalDevices(m_vars->m_instance, &device_count, m_availableDevices.data());
 
 	pickDevice();
-
-	createLogicalDevice();
 }
 
-Extra::QueueFamilyIndices VkRenderer::Device::findSupportedQueueFamilies(VkPhysicalDevice device)
+Extra::QueueFamilyIndices VkRenderer::Device::findSupportedQueueFamilies(VkPhysicalDevice device, VkSurfaceKHR surface)
 {
 	Extra::QueueFamilyIndices indicies;
 	uint32_t queueFamilyCount;
@@ -113,7 +118,7 @@ Extra::QueueFamilyIndices VkRenderer::Device::findSupportedQueueFamilies(VkPhysi
 		}
 		
 		VkBool32 presentSupport = false;
-		vkGetPhysicalDeviceSurfaceSupportKHR(device, count, m_vars->m_surface, &presentSupport);
+		vkGetPhysicalDeviceSurfaceSupportKHR(device, count, surface, &presentSupport);
 
 		if (presentSupport) {
 			indicies.presentFamily = count;
@@ -161,7 +166,7 @@ void VkRenderer::Device::pickDevice()
 	}
 
 	for (const auto& candidate : candidates) {
-		if (!findSupportedQueueFamilies(candidate.second).graphicsFamily.has_value()) {
+		if (!findSupportedQueueFamilies(candidate.second, m_vars->m_surface).graphicsFamily.has_value()) {
 			continue;
 		}
 		VkPhysicalDeviceProperties deviceProperties;

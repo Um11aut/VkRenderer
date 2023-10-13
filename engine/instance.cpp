@@ -31,23 +31,6 @@ void VkRenderer::Instance::createInfo()
 void VkRenderer::Instance::enableExtensions()
 {
 	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
-	m_instanceInfo.enabledExtensionCount = glfwExtensionCount;
-	m_instanceInfo.ppEnabledExtensionNames = glfwExtensions;
-
-	if (m_validationLayer->isEnabled()) {
-
-		m_instanceInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-		m_instanceInfo.ppEnabledLayerNames = validationLayers.data();
-
-		Debugger::populate(debugCreateInfo);
-		m_instanceInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*) &debugCreateInfo;
-	}
-	else {
-		m_instanceInfo.enabledLayerCount = 0;
-
-		m_instanceInfo.pNext = nullptr;
-	}
 }
 
 void VkRenderer::Instance::getRequiredExtensions()
@@ -75,6 +58,20 @@ void VkRenderer::Instance::useExtensions()
 {
 	m_instanceInfo.enabledExtensionCount = static_cast<uint32_t>(requiredExtensions.size());
 	m_instanceInfo.ppEnabledExtensionNames = requiredExtensions.data();
+
+	if (m_validationLayer->isEnabled()) {
+
+		m_instanceInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+		m_instanceInfo.ppEnabledLayerNames = validationLayers.data();
+
+		Debugger::populate(debugCreateInfo);
+		m_instanceInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugCreateInfo;
+	}
+	else {
+		m_instanceInfo.enabledLayerCount = 0;
+
+		m_instanceInfo.pNext = nullptr;
+	}
 }
 
 void VkRenderer::Instance::appendExtension(const char* extensionName)

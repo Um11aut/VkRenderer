@@ -1,3 +1,4 @@
+#pragma once
 #include <vulkan/vulkan.h>
 
 #include <vector>
@@ -26,20 +27,25 @@ namespace VkRenderer {
 		Extra::QueueFamilyIndices m_physicalDeviceIndices{};
 
 		std::shared_ptr<VkRenderer::ValidationLayer> m_validationLayer;
-		
+		std::vector<const char*> m_deviceExtensions;
 		std::vector<VkDeviceQueueCreateInfo> m_queueCreateInfos;
 		std::set<uint32_t> uniqueQueueFamilies;
 		
-		void createLogicalDevice();
 		void getDeviceProperties();
 		void getDeviceFeatures();
-		Extra::QueueFamilyIndices findSupportedQueueFamilies(VkPhysicalDevice device);
 		bool isDeviceSuitable(VkPhysicalDevice device);
 
 		int rateDevice(VkPhysicalDevice device);
 		void pickDevice();
 	public:
 		Device(Extra::VkVars* vars, std::shared_ptr<VkRenderer::ValidationLayer> validationLayer);
+		static Extra::QueueFamilyIndices findSupportedQueueFamilies(VkPhysicalDevice device, VkSurfaceKHR surface);
+
+		void appendExtension(const char* extensionName);
+
+		void create();
+		void destoy();
+
 		~Device();
 	};
 }

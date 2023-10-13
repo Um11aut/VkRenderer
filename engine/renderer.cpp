@@ -27,10 +27,10 @@ void VkRenderer::Renderer::initVk()
 		&m_variables.m_instance,
 		app_validation_layer
 	);
-	// app_instance->appendExtension(.....);
+	app_instance->appendExtension(VK_KHR_SURFACE_EXTENSION_NAME);
 	app_instance->create(); // therefore i need to have a create function
 
-	app_instance->printExtensions(true, false); // required, available
+	app_instance->printExtensions(true, true); // required, available
 	Logger::printSeparator();
 	
 	// Intializing debugger for our whole program
@@ -42,4 +42,11 @@ void VkRenderer::Renderer::initVk()
 
 	// Creating physical and logical Device
 	app_device = std::make_unique<VkRenderer::Device>(&m_variables, app_validation_layer);
+	app_device->appendExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+	app_device->create();
+
+	// Create Swap Chain
+	app_swapChain = std::make_unique<VkRenderer::SwapChain>(&m_variables, app_window);
+	app_swapChain->setPresentMode(Extra::Fifo);
+	app_swapChain->create();
 }
