@@ -8,6 +8,7 @@
 #include "device.hpp"
 #include "surface.hpp"
 #include "swap_chain.hpp"
+#include "shader.hpp"
 #include "extra/extra.hpp"
 #include <memory>
 
@@ -33,6 +34,7 @@ namespace VkRenderer {
 		std::unique_ptr<VkRenderer::Surface> app_surface;
 		std::unique_ptr<VkRenderer::Device> app_device;
 		std::unique_ptr<VkRenderer::SwapChain> app_swapChain;
+		std::unique_ptr<VkRenderer::ShaderModule> shader;
 
 	public:
 		Renderer(Window* window);

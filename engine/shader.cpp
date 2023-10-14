@@ -42,13 +42,19 @@ VkRenderer::ShaderModule::ShaderModule(Extra::VkVars* vars)
 {
 }
 
+VkRenderer::ShaderModule::~ShaderModule()
+{
+	vkDestroyShaderModule(m_vars->m_device, frag, nullptr);
+	vkDestroyShaderModule(m_vars->m_device, vert, nullptr);
+}
+
 std::pair<VkShaderModule, VkShaderModule> VkRenderer::ShaderModule::load(const std::string fragmentPath, const std::string vertexPath)
 {
 	auto fragShaderCode = readFile(fragmentPath);
 	auto vertShaderCode = readFile(vertexPath);
 	
-	VkShaderModule frag = createShaderModule(fragShaderCode);
-	VkShaderModule vert = createShaderModule(vertShaderCode);
+	frag = createShaderModule(fragShaderCode);
+	vert = createShaderModule(vertShaderCode);
 
 	return std::pair<VkShaderModule, VkShaderModule>(frag, vert);
 }

@@ -11,6 +11,8 @@ endif()
 
 project ("VkRenderer")
 
+set(source "${CMAKE_SOURCE_DIR}/common")
+set(destination "${CMAKE_CURRENT_BINARY_DIR}/common")
 
 # Добавьте источник в исполняемый файл этого проекта.
 add_executable (VkRenderer "main.cpp" "engine/entry.hpp" 
@@ -22,6 +24,17 @@ add_executable (VkRenderer "main.cpp" "engine/entry.hpp"
 "engine/debugger.hpp" "engine/debugger.cpp" 
 "engine/device.hpp" "engine/device.cpp"
 "engine/surface.hpp" "engine/surface.cpp" "engine/swap_chain.cpp"  "engine/shader.cpp")
+
+if(UNIX)
+	add_custom_command(TARGET VkRenderer PRE_BUILD COMMAND /bin/sh ${CMAKE_SOURCE_DIR}/common/shaders/compile.sh)
+endif(UNIX)
+if(WIN32)
+	add_custom_command(TARGET VkRenderer PRE_BUILD COMMAND ${CMAKE_SOURCE_DIR}/common/shaders/compile.bat)
+endif(WIN32)
+add_custom_command(TARGET VkRenderer
+COMMAND ${CMAKE_COMMAND} -E create_symlink ${source} ${destination}
+DEPENDS ${destination}
+COMMENT "symbolic link common folder from ${source} => ${destination}")
 
 add_subdirectory(deps/glfw)
 add_subdirectory(deps/glm)
