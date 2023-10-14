@@ -46,6 +46,8 @@ namespace VkRenderer {
 
 		void create();
 
+		inline VkExtent2D getExtent() { return m_swapChainExtent; }
+
 		~SwapChain();
 	};
 }

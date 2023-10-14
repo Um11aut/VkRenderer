@@ -50,6 +50,7 @@ void VkRenderer::Renderer::initVk()
 	app_swapChain->setPresentMode(Extra::MailBox);
 	app_swapChain->create();
 
-	shader = std::make_unique<VkRenderer::ShaderModule>(&m_variables);
-	shader->load("common/shaders/frag.spv", "common/shaders/vert.spv");
+	ShaderModule shader{&m_variables};
+
+	m_mainPipeline = std::make_unique<VkRenderer::GraphicsPipeline>(&m_variables, shader, *app_swapChain);
 }
