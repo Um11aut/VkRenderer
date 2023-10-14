@@ -59,7 +59,8 @@ void VkRenderer::SwapChain::createImageViews()
 		imageViewCreateInfo.subresourceRange.layerCount = 1;
 
 
-		if (vkCreateImageView(m_vars->m_device, &imageViewCreateInfo, nullptr, &m_imageViews[i]) != VK_SUCCESS) {} else {
+		if (vkCreateImageView(m_vars->m_device, &imageViewCreateInfo, nullptr, &m_imageViews[i]) != VK_SUCCESS) {
+			throw std::runtime_error("Failed to create an Image View!");
 		}
 	}
 
