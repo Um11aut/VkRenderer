@@ -23,7 +23,7 @@ add_executable (VkRenderer "main.cpp" "engine/entry.hpp"
 "engine/validation_layers.cpp" "engine/validation_layers.hpp"
 "engine/debugger.hpp" "engine/debugger.cpp" 
 "engine/device.hpp" "engine/device.cpp"
-"engine/surface.hpp" "engine/surface.cpp" "engine/swap_chain.cpp"  "engine/shader.cpp" "engine/graphics_pipeline.cpp")
+"engine/surface.hpp" "engine/surface.cpp" "engine/swap_chain.cpp"  "engine/shader.cpp" "engine/graphics_pipeline.cpp" "engine/render_pass.cpp")
 
 if(UNIX)
 	add_custom_command(TARGET VkRenderer PRE_BUILD COMMAND /bin/sh ${CMAKE_SOURCE_DIR}/common/shaders/compile.sh)

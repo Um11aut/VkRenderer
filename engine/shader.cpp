@@ -9,7 +9,7 @@ std::vector<char> VkRenderer::ShaderModule::readFile(const std::string& filePath
 		std::terminate();
 	}
 	else {
-		Logger::print({"Reading file: ", filePath});
+		Logger::print({"Reading shader: ", filePath});
 	}
 
 	size_t fileSize = (size_t)file.tellg();
@@ -30,9 +30,6 @@ VkShaderModule VkRenderer::ShaderModule::createShaderModule(const std::vector<ch
 
 	VkShaderModule shaderModule;
 	if (vkCreateShaderModule(m_vars->m_device, &createInfo, nullptr, &shaderModule) != VK_SUCCESS) {}
-	else {
-		Logger::printOnce("Created Shader Module!", MessageType::Success);
-	}
 
 	return shaderModule;
 }

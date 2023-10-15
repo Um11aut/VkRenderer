@@ -46,7 +46,8 @@ namespace VkRenderer {
 
 		void create();
 
-		inline VkExtent2D getExtent() { return m_swapChainExtent; }
+		inline VkExtent2D getExtent() const { return m_swapChainExtent; }
+		inline VkFormat getFormat() const { return m_imageFormat; }
 
 		~SwapChain();
 	};

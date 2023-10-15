@@ -1,6 +1,7 @@
 #include "renderer.hpp"
 #include "window.hpp"
 #include "extra/extra.hpp"
+#include <thread>
 
 namespace Application {
 	VkRenderer::Window* window;
@@ -16,6 +17,9 @@ namespace Application {
 
 		window = new VkRenderer::Window(info);
 		renderer = new VkRenderer::Renderer(window);
+
+		std::thread vkInit(&VkRenderer::Renderer::init, renderer);
+		vkInit.join();
 	}
 
 	void run() {

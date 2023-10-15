@@ -3,7 +3,6 @@
 VkRenderer::Renderer::Renderer(Window* window)
 	: app_window(window)
 {
-	initVk();
 }
 
 void VkRenderer::Renderer::run()
@@ -11,6 +10,11 @@ void VkRenderer::Renderer::run()
 	while (!app_window->shouldClose() && !app_window->KeyPressed(GLFW_KEY_ESCAPE)) {
 		glfwPollEvents();
 	}
+}
+
+void VkRenderer::Renderer::init()
+{
+	initVk();
 }
 
 void VkRenderer::Renderer::initVk()
@@ -52,5 +56,7 @@ void VkRenderer::Renderer::initVk()
 
 	ShaderModule shader{&m_variables};
 
-	m_mainPipeline = std::make_unique<VkRenderer::GraphicsPipeline>(&m_variables, shader, *app_swapChain);
+	app_renderPass = std::make_unique<VkRenderer::RenderPass>(&m_variables, app_swapChain);
+
+	m_mainPipeline = std::make_unique<VkRenderer::GraphicsPipeline>(&m_variables, shader, app_swapChain);
 }

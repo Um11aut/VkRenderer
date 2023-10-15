@@ -10,6 +10,7 @@
 #include "swap_chain.hpp"
 #include "graphics_pipeline.hpp"
 #include "shader.hpp"
+#include "render_pass.hpp"
 #include "extra/extra.hpp"
 #include <memory>
 
@@ -34,13 +35,14 @@ namespace VkRenderer {
 		std::unique_ptr<VkRenderer::Debugger> app_debugger;
 		std::unique_ptr<VkRenderer::Surface> app_surface;
 		std::unique_ptr<VkRenderer::Device> app_device;
-		std::unique_ptr<VkRenderer::SwapChain> app_swapChain;
-
+		std::shared_ptr<VkRenderer::SwapChain> app_swapChain;
 		std::unique_ptr<VkRenderer::GraphicsPipeline> m_mainPipeline;
+		std::unique_ptr<VkRenderer::RenderPass> app_renderPass;
 
 	public:
 		Renderer(Window* window);
 
 		void run();
+		void init();
 	};
 }
