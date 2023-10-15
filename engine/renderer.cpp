@@ -54,11 +54,13 @@ void VkRenderer::Renderer::initVk()
 	app_swapChain->setPresentMode(Extra::MailBox);
 	app_swapChain->create();
 
-	ShaderModule shaderModule{&m_variables};
 
 	app_renderPass = std::make_unique<VkRenderer::RenderPass>(&m_variables, app_swapChain);
 
-	m_mainPipeline = std::make_unique<VkRenderer::GraphicsPipeline>(&m_variables, shaderModule, app_swapChain);
-
+	ShaderModule shaderModule{ &m_variables };
+	m_mainPipeline = std::make_shared<VkRenderer::GraphicsPipeline>(&m_variables, shaderModule, app_swapChain);
+	
 	app_swapChain->createFrameBuffers();
+
+	app_commandBuffer = std::make_shared<VkRenderer::CommandBuffer>(&m_variables, app_swapChain);
 }

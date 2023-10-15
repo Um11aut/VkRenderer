@@ -11,6 +11,7 @@
 #include "graphics_pipeline.hpp"
 #include "shader.hpp"
 #include "render_pass.hpp"
+#include "command_buffer.hpp"
 #include "extra/extra.hpp"
 #include <memory>
 
@@ -30,13 +31,16 @@ namespace VkRenderer {
 	private:
 		std::shared_ptr<VkRenderer::Window> app_window;
 		std::shared_ptr<VkRenderer::ValidationLayer> app_validation_layer;
+		std::shared_ptr<VkRenderer::CommandBuffer> app_commandBuffer;
 		
 		std::unique_ptr<VkRenderer::Instance> app_instance;
 		std::unique_ptr<VkRenderer::Debugger> app_debugger;
 		std::unique_ptr<VkRenderer::Surface> app_surface;
 		std::unique_ptr<VkRenderer::Device> app_device;
+
 		std::shared_ptr<VkRenderer::SwapChain> app_swapChain;
-		std::unique_ptr<VkRenderer::GraphicsPipeline> m_mainPipeline;
+		std::shared_ptr<VkRenderer::GraphicsPipeline> m_mainPipeline;
+
 		std::unique_ptr<VkRenderer::RenderPass> app_renderPass;
 
 	public:
