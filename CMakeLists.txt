@@ -28,7 +28,8 @@ add_executable (VkRenderer "main.cpp" "engine/entry.hpp"
 "engine/shader.cpp" 
 "engine/graphics_pipeline.cpp" 
 "engine/render_pass.cpp"
-"engine/command_buffer.cpp" "engine/command_buffer.hpp")
+"engine/command_buffer.cpp" "engine/command_buffer.hpp" 
+"engine/drawer.cpp" "engine/drawer.hpp")
 
 if(UNIX)
 	add_custom_command(TARGET VkRenderer PRE_BUILD COMMAND /bin/sh ${CMAKE_SOURCE_DIR}/common/shaders/compile.sh)

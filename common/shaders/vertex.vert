@@ -1,6 +1,4 @@
-#version 460
-
-#extension GL_KHR_vulkan_glsl : enable
+#version 450
 
 layout(location = 0) out vec3 fragColor;
 

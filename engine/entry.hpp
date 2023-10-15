@@ -18,11 +18,10 @@ namespace Application {
 		window = new VkRenderer::Window(info);
 		renderer = new VkRenderer::Renderer(window);
 
-		std::thread vkInit(&VkRenderer::Renderer::init, renderer);
-		vkInit.join();
 	}
 
 	void run() {
+		renderer->init();
 		renderer->run();
 		delete renderer;
 	}

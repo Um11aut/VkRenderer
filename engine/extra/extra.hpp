@@ -20,6 +20,7 @@ namespace Extra {
 		VkQueue m_graphicsQueue; 
 		VkSwapchainKHR m_swapChain;
 		VkRenderPass m_renderPass;
+		VkCommandBuffer m_commandBuffer;
 	};
 
 	struct QueueFamilyIndices {

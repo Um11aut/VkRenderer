@@ -15,6 +15,7 @@ namespace VkRenderer {
 		VkAttachmentDescription colorAttachment{};
 		VkAttachmentReference colorAttachmentRef{};
 		VkSubpassDescription subpass{};
+		VkSubpassDependency dependency{};
 		VkRenderPassCreateInfo renderPassInfo{};
 	public:
 		RenderPass(Extra::VkVars* vars, std::shared_ptr<SwapChain> swapChain);

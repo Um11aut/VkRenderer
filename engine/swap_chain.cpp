@@ -88,9 +88,6 @@ void VkRenderer::SwapChain::createFrameBuffers()
 		frameInfo.layers = 1;
 
 		if (vkCreateFramebuffer(m_vars->m_device, &frameInfo, nullptr, &m_frameBuffers[i]) != VK_SUCCESS) {}
-		else {
-			Logger::printOnce("Created Frame Buffer!", MessageType::Success);
-		}
 	}
 }
 

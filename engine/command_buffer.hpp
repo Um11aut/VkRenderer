@@ -17,9 +17,8 @@ namespace VkRenderer {
            
         VkCommandPool m_commandPool;
         Extra::QueueFamilyIndices m_queueFamilyIndices;
-        VkCommandPoolCreateInfo m_poolInfo;
+        VkCommandPoolCreateInfo m_poolInfo{};
 
-        VkCommandBuffer m_commandBuffer;
         VkCommandBufferAllocateInfo m_commandBufferAllocateInfo{};
     public:
         CommandBuffer(Extra::VkVars* vars, std::shared_ptr<SwapChain> swapChain, std::shared_ptr<GraphicsPipeline> graphicsPipeline);

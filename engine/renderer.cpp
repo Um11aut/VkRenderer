@@ -9,7 +9,10 @@ void VkRenderer::Renderer::run()
 {
 	while (!app_window->shouldClose() && !app_window->KeyPressed(GLFW_KEY_ESCAPE)) {
 		glfwPollEvents();
+		draw();
 	}
+	vkDeviceWaitIdle(m_variables.m_device);
+	Syncher::destroy(m_variables.m_device);
 }
 
 void VkRenderer::Renderer::init()
@@ -62,5 +65,51 @@ void VkRenderer::Renderer::initVk()
 	
 	app_swapChain->createFrameBuffers();
 
-	app_commandBuffer = std::make_shared<VkRenderer::CommandBuffer>(&m_variables, app_swapChain);
+	Syncher::createSyncObjects(m_variables.m_device);
+
+	app_commandBuffer = std::make_shared<VkRenderer::CommandBuffer>(&m_variables, app_swapChain, m_mainPipeline);
+}
+
+void VkRenderer::Renderer::draw()
+{
+	vkWaitForFences(m_variables.m_device, 1, &Syncher::m_inFlightFence, VK_TRUE, UINT64_MAX);
+	vkResetFences(m_variables.m_device, 1, &Syncher::m_inFlightFence);
+
+	uint32_t imageIndex;
+	vkAcquireNextImageKHR(m_variables.m_device, m_variables.m_swapChain, UINT64_MAX, Syncher::m_imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+
+	vkResetCommandBuffer(m_variables.m_commandBuffer, 0);
+
+	app_commandBuffer->record(imageIndex);
+
+	VkSubmitInfo submitInfo{};
+	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+	VkSemaphore waitSemaphores[] = { Syncher::m_imageAvailableSemaphore };
+	VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+	submitInfo.waitSemaphoreCount = 1;
+	submitInfo.pWaitSemaphores = waitSemaphores;
+	submitInfo.pWaitDstStageMask = waitStages;
+
+	submitInfo.commandBufferCount = 1;
+	submitInfo.pCommandBuffers = &m_variables.m_commandBuffer;
+
+	VkSemaphore signalSemaphores[] = { Syncher::m_renderFinishedSemaphore };
+	submitInfo.signalSemaphoreCount = 1;
+	submitInfo.pSignalSemaphores = signalSemaphores;
+
+	if (vkQueueSubmit(m_variables.m_graphicsQueue, 1, &submitInfo, Syncher::m_inFlightFence) != VK_SUCCESS) {}
+
+	VkPresentInfoKHR presentInfo{};
+	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+
+	presentInfo.waitSemaphoreCount = 1;
+	presentInfo.pWaitSemaphores = signalSemaphores;
+
+	VkSwapchainKHR swapChains[] = { m_variables.m_swapChain };
+	presentInfo.swapchainCount = 1;
+	presentInfo.pSwapchains = swapChains;
+	presentInfo.pImageIndices = &imageIndex;
+
+	vkQueuePresentKHR(m_variables.m_presentQueue, &presentInfo);
 }
