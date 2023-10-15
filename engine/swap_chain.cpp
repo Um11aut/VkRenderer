@@ -69,6 +69,31 @@ void VkRenderer::SwapChain::createImageViews()
 	}
 }
 
+void VkRenderer::SwapChain::createFrameBuffers()
+{
+	m_frameBuffers.resize(m_imageViews.size());
+	
+	for (size_t i = 0; i < m_imageViews.size(); i++) {
+		VkImageView attachments[] = {
+			m_imageViews[i]
+		};
+
+		VkFramebufferCreateInfo frameInfo{};
+		frameInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+		frameInfo.renderPass = m_vars->m_renderPass;
+		frameInfo.attachmentCount = 1;
+		frameInfo.pAttachments = attachments;
+		frameInfo.width = m_swapChainExtent.width;
+		frameInfo.height = m_swapChainExtent.height;
+		frameInfo.layers = 1;
+
+		if (vkCreateFramebuffer(m_vars->m_device, &frameInfo, nullptr, &m_frameBuffers[i]) != VK_SUCCESS) {}
+		else {
+			Logger::printOnce("Created Frame Buffer!", MessageType::Success);
+		}
+	}
+}
+
 VkRenderer::SwapChainDetails VkRenderer::SwapChain::getSwapChainSupportDetails()
 {
 	SwapChainDetails details;
@@ -185,5 +210,10 @@ VkRenderer::SwapChain::~SwapChain()
 	for (const auto& imageView : m_imageViews) {
 		vkDestroyImageView(m_vars->m_device, imageView, nullptr);
 	}
+
+	for (const auto& frameBuffer : m_frameBuffers) {
+		vkDestroyFramebuffer(m_vars->m_device, frameBuffer, nullptr);
+	}
+
 	vkDestroySwapchainKHR(m_vars->m_device, m_vars->m_swapChain, nullptr);
 }

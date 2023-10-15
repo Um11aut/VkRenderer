@@ -28,6 +28,7 @@ namespace VkRenderer {
 
 		std::vector<VkImage> m_images;
 		std::vector<VkImageView> m_imageViews;
+		std::vector<VkFramebuffer> m_frameBuffers;
 
 		VkFormat m_imageFormat;
 		VkExtent2D m_swapChainExtent;
@@ -45,6 +46,7 @@ namespace VkRenderer {
 		void setPresentMode(const Extra::PresentMode presentMode);
 
 		void create();
+		void createFrameBuffers();
 
 		inline VkExtent2D getExtent() const { return m_swapChainExtent; }
 		inline VkFormat getFormat() const { return m_imageFormat; }
