@@ -14,6 +14,8 @@ project ("VkRenderer")
 set(source "${CMAKE_SOURCE_DIR}/common")
 set(destination "${CMAKE_CURRENT_BINARY_DIR}/common")
 
+set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/deps/imgui_t)
+
 # Добавьте источник в исполняемый файл этого проекта.
 add_executable (VkRenderer "main.cpp" "engine/entry.hpp" 
 "engine/renderer.hpp" "engine/renderer.cpp" 
@@ -29,14 +31,11 @@ add_executable (VkRenderer "main.cpp" "engine/entry.hpp"
 "engine/graphics_pipeline.cpp" 
 "engine/render_pass.cpp"
 "engine/command_buffer.cpp" "engine/command_buffer.hpp" 
-"engine/drawer.cpp" "engine/drawer.hpp")
+"engine/drawer.cpp" "engine/drawer.hpp" 
+"engine/gui/gui.cpp" "engine/gui/gui.hpp" "engine/layers/triangle.cpp" 
+"engine/layers/parent/layer_factory.hpp" "engine/layers/parent/layer.hpp" )
 
-if(UNIX)
-	add_custom_command(TARGET VkRenderer PRE_BUILD COMMAND /bin/sh ${CMAKE_SOURCE_DIR}/common/shaders/compile.sh)
-endif(UNIX)
-if(WIN32)
-	add_custom_command(TARGET VkRenderer PRE_BUILD COMMAND ${CMAKE_SOURCE_DIR}/common/shaders/compile.bat)
-endif(WIN32)
+
 add_custom_command(TARGET VkRenderer
 COMMAND ${CMAKE_COMMAND} -E create_symlink ${source} ${destination}
 DEPENDS ${destination}
@@ -47,10 +46,31 @@ add_subdirectory(deps/glm)
 
 find_package(Vulkan REQUIRED)
 
-include_directories(${Vulkan_INCLUDE_DIRS})
-target_link_libraries(VkRenderer ${Vulkan_LIBRARIES})
-target_link_libraries(VkRenderer glfw ${GLFW_LIBRARIES} Vulkan::Vulkan)
-target_link_libraries(VkRenderer glm)
+add_library(imgui
+    "${IMGUI_DIR}/imgui.h"
+    "${IMGUI_DIR}/imgui.cpp"
+
+    "${IMGUI_DIR}/imgui_demo.cpp"
+    "${IMGUI_DIR}/imgui_draw.cpp"
+    "${IMGUI_DIR}/imgui_widgets.cpp"
+)
+add_library(imgui_impl_vulkan STATIC
+        ${IMGUI_DIR}/imgui_impl_vulkan.cpp
+        ${IMGUI_DIR}/imgui_impl_glfw.cpp
+        )
+
+include_directories(${Vulkan_INCLUDE_DIRS} ${GLFW_INCLUDE_DIRS} ${IMGUI_DIR})
+
+target_include_directories(imgui PUBLIC ${IMGUI_DIR})
+target_include_directories(imgui_impl_vulkan PUBLIC ${IMGUI_DIR} ${VULKAN_LIBRARIES} ${GLFW_LIBRARIES})
+
+target_link_libraries(VkRenderer 
+    ${Vulkan_LIBRARIES} 
+    glfw 
+    ${GLFW_LIBRARIES} 
+    Vulkan::Vulkan 
+    glm
+)
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET VkRenderer PROPERTY CXX_STANDARD 20)

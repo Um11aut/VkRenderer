@@ -143,7 +143,7 @@ void VkRenderer::SwapChain::setPresentMode(Extra::PresentMode presentMode)
 
 void VkRenderer::SwapChain::create()
 {
-	SwapChainDetails swapChainSupport = getSwapChainSupportDetails();
+	swapChainSupport = getSwapChainSupportDetails();
 
 	VkSurfaceFormatKHR surfaceFormat = getSwapSurfaceFormat(swapChainSupport.formats);
 	VkPresentModeKHR presentMode = getSwapPresentMode(swapChainSupport.presentModes);

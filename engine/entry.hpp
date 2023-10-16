@@ -12,8 +12,8 @@ namespace Application {
 		info.appName = "Wolfram";
 		info.engineName = "Wolfram";
 		info.GUI = true;
-		info.windowWidth = 800;
-		info.windowHeight = 600;
+		info.windowWidth = 1920;
+		info.windowHeight = 1080;
 
 		window = new VkRenderer::Window(info);
 		renderer = new VkRenderer::Renderer(window);

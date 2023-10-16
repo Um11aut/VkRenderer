@@ -39,6 +39,8 @@ namespace VkRenderer {
 		VkExtent2D getSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 		VkPresentModeKHR getSwapPresentMode(const std::vector<VkPresentModeKHR>& presentModes);
 
+		SwapChainDetails swapChainSupport;
+
 		void createImageViews();
 	public:
 		SwapChain(Extra::VkVars* vars, std::shared_ptr<VkRenderer::Window> window);
@@ -51,7 +53,8 @@ namespace VkRenderer {
 		inline VkExtent2D getExtent() const { return m_swapChainExtent; }
 		inline VkFormat getFormat() const { return m_imageFormat; }
 
-		inline std::vector<VkFramebuffer> getFrameBuffers() { return m_frameBuffers; }
+		inline std::vector<VkFramebuffer> getFrameBuffers() const { return m_frameBuffers; }
+		inline SwapChainDetails getDetails() const { return swapChainSupport; }
 
 		~SwapChain();
 	};

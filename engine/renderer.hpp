@@ -13,7 +13,10 @@
 #include "render_pass.hpp"
 #include "command_buffer.hpp"
 #include "drawer.hpp"
+#include "gui/gui.hpp"
 #include "extra/extra.hpp"
+#include "layers/triangle.hpp"
+#include "layers/parent/layer_factory.hpp"
 #include <memory>
 
 #ifdef NDEBUG
@@ -29,24 +32,19 @@ namespace VkRenderer {
 
 		void initVk();
 		void draw();
-		Syncher syncher;
 
 	private:
+
 		std::shared_ptr<VkRenderer::Window> app_window;
 		std::shared_ptr<VkRenderer::ValidationLayer> app_validation_layer;
 		
 		std::unique_ptr<VkRenderer::Instance> app_instance;
-		std::unique_ptr<VkRenderer::Debugger> app_debugger;
 		std::unique_ptr<VkRenderer::Surface> app_surface;
+		std::unique_ptr<VkRenderer::Debugger> app_debugger;
 		std::unique_ptr<VkRenderer::Device> app_device;
-
-		std::unique_ptr<VkRenderer::RenderPass> app_renderPass;
-		ShaderModule shaderModule{ &m_variables };
-		std::shared_ptr<VkRenderer::GraphicsPipeline> m_mainPipeline;
 		std::shared_ptr<VkRenderer::SwapChain> app_swapChain;
 
-		std::shared_ptr<VkRenderer::CommandBuffer> app_commandBuffer;
-
+		std::vector<std::shared_ptr<Layer>> layers;
 	public:
 		Renderer(Window* window);
 

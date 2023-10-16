@@ -5,8 +5,6 @@ VkRenderer::CommandBuffer::CommandBuffer(Extra::VkVars* vars, std::shared_ptr<Sw
 {
 	m_queueFamilyIndices = Device::findSupportedQueueFamilies(m_vars->m_physicalDevice, m_vars->m_surface);
 
-	Logger::printOnce(std::to_string(m_queueFamilyIndices.graphicsFamily.value()));
-
 	m_poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 	m_poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 	m_poolInfo.queueFamilyIndex = 0;
@@ -31,6 +29,7 @@ void VkRenderer::CommandBuffer::record(uint32_t imageIndex)
 {
 	VkCommandBufferBeginInfo beginInfo{};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
 	if (vkBeginCommandBuffer(m_vars->m_commandBuffer, &beginInfo) != VK_SUCCESS) {}
 
@@ -41,7 +40,7 @@ void VkRenderer::CommandBuffer::record(uint32_t imageIndex)
 	renderPassInfo.renderArea.offset = { 0,0 };
 	renderPassInfo.renderArea.extent = m_swapChain->getExtent();
 	
-	VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 0.0f}}};
+	VkClearValue clearColor = {{{0.0f, 0.0f, 1.0f, 1.0f}}};
 	renderPassInfo.clearValueCount = 1;
 	renderPassInfo.pClearValues = &clearColor;
 
@@ -69,8 +68,8 @@ void VkRenderer::CommandBuffer::record(uint32_t imageIndex)
 
 	if (vkEndCommandBuffer(m_vars->m_commandBuffer) != VK_SUCCESS) {}
 }
-
 VkRenderer::CommandBuffer::~CommandBuffer()
 {
+	Logger::printOnce("destroyed command buffer");
 	vkDestroyCommandPool(m_vars->m_device, m_commandPool, nullptr);
 }
