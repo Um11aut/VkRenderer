@@ -17,8 +17,8 @@ namespace VkRenderer {
 
 		Extra::VkVars* m_vars;
 
-		VkPipeline m_graphicsPipeline;
-		VkPipelineLayout m_pipelineLayout;
+		VkPipeline m_graphicsPipeline{};
+		VkPipelineLayout m_pipelineLayout{};
 
 		VkGraphicsPipelineCreateInfo pipelineInfo{};
 

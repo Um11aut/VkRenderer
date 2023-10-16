@@ -16,6 +16,7 @@ VkRenderer::RenderPass::RenderPass(Extra::VkVars* vars, std::shared_ptr<SwapChai
 	colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
 	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+	subpass.colorAttachmentCount = 1;
 	subpass.pColorAttachments = &colorAttachmentRef;
 
 	dependency.srcSubpass = VK_SUBPASS_EXTERNAL;

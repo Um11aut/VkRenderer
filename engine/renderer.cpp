@@ -12,7 +12,8 @@ void VkRenderer::Renderer::run()
 		draw();
 	}
 	vkDeviceWaitIdle(m_variables.m_device);
-	Syncher::destroy(m_variables.m_device);
+
+	syncher.destroy(m_variables.m_device);
 }
 
 void VkRenderer::Renderer::init()
@@ -39,13 +40,14 @@ void VkRenderer::Renderer::initVk()
 
 	app_instance->printExtensions(true, true); // required, available
 	Logger::printSeparator();
+
+	// creating Window surface
+	app_surface = std::make_unique<VkRenderer::Surface>(&m_variables, app_window);
 	
 	// Intializing debugger for our whole program
 	if (app_validation_layer->isEnabled()) {
 		app_debugger = std::make_unique<VkRenderer::Debugger>(app_validation_layer, m_variables.m_instance);
 	}
-	// creating Window surface
-	app_surface = std::make_unique<VkRenderer::Surface>(&m_variables, app_window);
 
 	// Creating physical and logical Device
 	app_device = std::make_unique<VkRenderer::Device>(&m_variables, app_validation_layer);
@@ -54,29 +56,27 @@ void VkRenderer::Renderer::initVk()
 
 	// Create Swap Chain
 	app_swapChain = std::make_unique<VkRenderer::SwapChain>(&m_variables, app_window);
-	app_swapChain->setPresentMode(Extra::MailBox);
+	app_swapChain->setPresentMode(Extra::Fifo);
 	app_swapChain->create();
-
 
 	app_renderPass = std::make_unique<VkRenderer::RenderPass>(&m_variables, app_swapChain);
 
-	ShaderModule shaderModule{ &m_variables };
 	m_mainPipeline = std::make_shared<VkRenderer::GraphicsPipeline>(&m_variables, shaderModule, app_swapChain);
 	
 	app_swapChain->createFrameBuffers();
 
-	Syncher::createSyncObjects(m_variables.m_device);
-
 	app_commandBuffer = std::make_shared<VkRenderer::CommandBuffer>(&m_variables, app_swapChain, m_mainPipeline);
+
+	syncher.createSyncObjects(m_variables.m_device);
 }
 
 void VkRenderer::Renderer::draw()
 {
-	vkWaitForFences(m_variables.m_device, 1, &Syncher::m_inFlightFence, VK_TRUE, UINT64_MAX);
-	vkResetFences(m_variables.m_device, 1, &Syncher::m_inFlightFence);
+	vkWaitForFences(m_variables.m_device, 1, &syncher.m_inFlightFence, VK_TRUE, UINT64_MAX);
+	vkResetFences(m_variables.m_device, 1, &syncher.m_inFlightFence);
 
 	uint32_t imageIndex;
-	vkAcquireNextImageKHR(m_variables.m_device, m_variables.m_swapChain, UINT64_MAX, Syncher::m_imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+	vkAcquireNextImageKHR(m_variables.m_device, m_variables.m_swapChain, UINT64_MAX, syncher.m_imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
 
 	vkResetCommandBuffer(m_variables.m_commandBuffer, 0);
 
@@ -85,7 +85,7 @@ void VkRenderer::Renderer::draw()
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-	VkSemaphore waitSemaphores[] = { Syncher::m_imageAvailableSemaphore };
+	VkSemaphore waitSemaphores[] = { syncher.m_imageAvailableSemaphore };
 	VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 	submitInfo.waitSemaphoreCount = 1;
 	submitInfo.pWaitSemaphores = waitSemaphores;
@@ -94,11 +94,11 @@ void VkRenderer::Renderer::draw()
 	submitInfo.commandBufferCount = 1;
 	submitInfo.pCommandBuffers = &m_variables.m_commandBuffer;
 
-	VkSemaphore signalSemaphores[] = { Syncher::m_renderFinishedSemaphore };
+	VkSemaphore signalSemaphores[] = { syncher.m_renderFinishedSemaphore };
 	submitInfo.signalSemaphoreCount = 1;
 	submitInfo.pSignalSemaphores = signalSemaphores;
 
-	if (vkQueueSubmit(m_variables.m_graphicsQueue, 1, &submitInfo, Syncher::m_inFlightFence) != VK_SUCCESS) {}
+	if (vkQueueSubmit(m_variables.m_graphicsQueue, 1, &submitInfo, syncher.m_inFlightFence) != VK_SUCCESS) {}
 
 	VkPresentInfoKHR presentInfo{};
 	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;

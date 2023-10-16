@@ -17,8 +17,8 @@ namespace VkRenderer {
 	private:
 		Extra::VkVars* m_vars;
 
-		VkPhysicalDeviceProperties m_deviceProperties;
-		VkPhysicalDeviceFeatures m_deviceFeatures;
+		VkPhysicalDeviceProperties m_deviceProperties{};
+		VkPhysicalDeviceFeatures m_deviceFeatures{};
 
 		std::vector<VkPhysicalDevice> m_availableDevices;
 

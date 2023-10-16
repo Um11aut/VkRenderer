@@ -15,7 +15,7 @@ namespace VkRenderer {
         std::shared_ptr<SwapChain> m_swapChain;
         std::shared_ptr<GraphicsPipeline> m_graphicsPipeline;
            
-        VkCommandPool m_commandPool;
+        VkCommandPool m_commandPool{};
         Extra::QueueFamilyIndices m_queueFamilyIndices;
         VkCommandPoolCreateInfo m_poolInfo{};
 

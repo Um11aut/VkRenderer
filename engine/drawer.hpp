@@ -5,12 +5,12 @@
 #include <vulkan/vulkan.h>
 
 namespace VkRenderer {
-    namespace Syncher {
-        inline VkSemaphore m_imageAvailableSemaphore;
-        inline VkSemaphore m_renderFinishedSemaphore;
-        inline VkFence m_inFlightFence;
+    struct Syncher {
+        VkSemaphore m_imageAvailableSemaphore;
+        VkSemaphore m_renderFinishedSemaphore;
+        VkFence m_inFlightFence;
 
         void createSyncObjects(VkDevice& device);
         void destroy(VkDevice& device);
-    }
+    };
 }

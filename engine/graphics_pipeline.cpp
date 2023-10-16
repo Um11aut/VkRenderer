@@ -85,9 +85,10 @@ void VkRenderer::GraphicsPipeline::createFixedFunctions()
 }
 
 void VkRenderer::GraphicsPipeline::createPipeline() {
+	VkPipelineShaderStageCreateInfo m[] = {vertCreateInfo, fragCreateInfo};
 	pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 	pipelineInfo.stageCount = 2;
-	pipelineInfo.pStages = m_shaderStages.data();
+	pipelineInfo.pStages = m;
 	pipelineInfo.pVertexInputState = &vertexInputInfo;
 	pipelineInfo.pInputAssemblyState = &inputAssembly;
 	pipelineInfo.pViewportState = &viewportState;

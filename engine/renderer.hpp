@@ -29,6 +29,7 @@ namespace VkRenderer {
 
 		void initVk();
 		void draw();
+		Syncher syncher;
 
 	private:
 		std::shared_ptr<VkRenderer::Window> app_window;
@@ -40,6 +41,7 @@ namespace VkRenderer {
 		std::unique_ptr<VkRenderer::Device> app_device;
 
 		std::unique_ptr<VkRenderer::RenderPass> app_renderPass;
+		ShaderModule shaderModule{ &m_variables };
 		std::shared_ptr<VkRenderer::GraphicsPipeline> m_mainPipeline;
 		std::shared_ptr<VkRenderer::SwapChain> app_swapChain;
 

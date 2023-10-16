@@ -41,7 +41,7 @@ void VkRenderer::CommandBuffer::record(uint32_t imageIndex)
 	renderPassInfo.renderArea.offset = { 0,0 };
 	renderPassInfo.renderArea.extent = m_swapChain->getExtent();
 	
-	VkClearValue clearColor = {{{0.0f, 1.0f, 0.0f, 1.0f}}};
+	VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 0.0f}}};
 	renderPassInfo.clearValueCount = 1;
 	renderPassInfo.pClearValues = &clearColor;
 
@@ -59,7 +59,7 @@ void VkRenderer::CommandBuffer::record(uint32_t imageIndex)
 		vkCmdSetViewport(m_vars->m_commandBuffer, 0, 1, &viewPort);
 
 		VkRect2D scissor{};
-		scissor.offset = { 0,0 };
+		scissor.offset = { 0, 0 };
 		scissor.extent = m_swapChain->getExtent();
 		vkCmdSetScissor(m_vars->m_commandBuffer, 0, 1, &scissor);
 
