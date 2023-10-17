@@ -29,9 +29,11 @@ public:
         syncher->destroy(variables->m_device);
         commandBuffer->destroy();
         trianglePipeline->destroy();
+        triangle1Pipeline->destroy();
+        shaderModule->destroy();
+        shaderModule1->destroy();
         renderPass->destroy();
         swapChain->destroy();
-        shaderModule->destroy();
     }
 private:
     Extra::VkVars* variables;
@@ -40,12 +42,13 @@ private:
     std::unique_ptr<VkRenderer::RenderPass> renderPass;
     
     std::shared_ptr<VkRenderer::ShaderModule> shaderModule;
+    std::shared_ptr<VkRenderer::ShaderModule> shaderModule1;
     std::shared_ptr<VkRenderer::GraphicsPipeline> trianglePipeline;
+    std::shared_ptr<VkRenderer::GraphicsPipeline> triangle1Pipeline;
+
     std::shared_ptr<VkRenderer::SwapChain> swapChain;
     std::unique_ptr<VkRenderer::CommandBuffer> commandBuffer;
     std::unique_ptr <VkRenderer::Syncher> syncher;
-    std::unique_ptr<VkRenderer::GUI> gui;
-
 
     void draw();
 };

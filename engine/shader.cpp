@@ -34,8 +34,8 @@ VkShaderModule VkRenderer::ShaderModule::createShaderModule(const std::vector<ch
 	return shaderModule;
 }
 
-VkRenderer::ShaderModule::ShaderModule(Extra::VkVars* vars)
-	: m_vars(vars)
+VkRenderer::ShaderModule::ShaderModule(Extra::VkVars* vars, std::string fragmentPath, std::string vertexPath)
+	: m_vars(vars), m_fragmentPath(fragmentPath), m_vertexPath(vertexPath)
 {
 }
 
@@ -46,10 +46,10 @@ void VkRenderer::ShaderModule::destroy()
 }
 
 
-std::pair<VkShaderModule, VkShaderModule> VkRenderer::ShaderModule::load(const std::string fragmentPath, const std::string vertexPath)
+std::pair<VkShaderModule, VkShaderModule> VkRenderer::ShaderModule::get()
 {
-	auto fragShaderCode = readFile(fragmentPath);
-	auto vertShaderCode = readFile(vertexPath);
+	auto fragShaderCode = readFile(m_fragmentPath);
+	auto vertShaderCode = readFile(m_vertexPath);
 	
 	frag = createShaderModule(fragShaderCode);
 	vert = createShaderModule(vertShaderCode);

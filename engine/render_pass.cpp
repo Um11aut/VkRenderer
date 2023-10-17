@@ -38,6 +38,8 @@ VkRenderer::RenderPass::RenderPass(Extra::VkVars* vars, std::shared_ptr<SwapChai
 	else {
 		Logger::printOnce("Created Render Pass!", MessageType::Success);
 	}
+
+	m_swapChain->createFrameBuffers();
 }
 
 void VkRenderer::RenderPass::destroy()

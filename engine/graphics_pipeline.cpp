@@ -2,7 +2,7 @@
 
 void VkRenderer::GraphicsPipeline::createShaderStageInfo()
 {
-	auto modules = m_shaderModule->load("common/shaders/out/fragment.spv", "common/shaders/out/vertex.spv");
+	auto modules = m_shaderModule->get();
 
 	fragCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 	fragCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;

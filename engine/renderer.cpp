@@ -5,6 +5,19 @@ VkRenderer::Renderer::Renderer(Window* window)
 {
 }
 
+VkRenderer::Renderer::~Renderer()
+{
+	vkDeviceWaitIdle(m_variables.m_device);
+	for (const auto& layer : layers) {
+		layer->onDestroy();
+	}
+	app_window->close();
+	app_debugger->destroy();
+	app_surface->destroy();
+	app_device->destoy();
+	app_instance->destroy();
+}
+
 void VkRenderer::Renderer::run()
 {
 	while (!app_window->shouldClose() && !app_window->KeyPressed(GLFW_KEY_ESCAPE)) {
@@ -15,15 +28,6 @@ void VkRenderer::Renderer::run()
 		}
 
 	}
-	vkDeviceWaitIdle(m_variables.m_device);
-	for (const auto& layer : layers) {
-		layer->onDestroy();
-	}
-	app_window->close();
-	app_debugger->destroy();
-	app_surface->destroy();
-	app_device->destoy();
-	app_instance->destroy();
 }
 
 void VkRenderer::Renderer::init()
@@ -55,8 +59,7 @@ void VkRenderer::Renderer::initVk()
 	app_instance->appendExtension(VK_KHR_SURFACE_EXTENSION_NAME);
 	app_instance->create(); // therefore i need to have a create function
 
-	app_instance->printExtensions(true, true); // required, available
-	Logger::printSeparator();
+	app_instance->printExtensions(false, false); // required, available
 
 	// creating Window surface
 	app_surface = std::make_unique<VkRenderer::Surface>(&m_variables, app_window);
@@ -72,6 +75,8 @@ void VkRenderer::Renderer::initVk()
 	app_device->create();
 
 	app_swapChain = std::make_shared<VkRenderer::SwapChain>(&m_variables, app_window);
-	app_swapChain->setPresentMode(Extra::Fifo);
+	app_swapChain->setPresentMode(Extra::MailBox);
 	app_swapChain->create();
+
+	gui = std::make_unique<VkRenderer::GUI>(&m_variables, app_swapChain);
 }

@@ -39,6 +39,7 @@ namespace VkRenderer {
 		std::unique_ptr<VkRenderer::Surface> app_surface;
 		std::unique_ptr<VkRenderer::Device> app_device;
 		std::shared_ptr<VkRenderer::SwapChain> app_swapChain;
+		std::unique_ptr<VkRenderer::GUI> gui;
 
 		std::vector<std::shared_ptr<Layer>> layers;
 
@@ -47,6 +48,7 @@ namespace VkRenderer {
 
 	public:
 		Renderer(Window* window);
+		~Renderer();
 
 		void run();
 		void init();
