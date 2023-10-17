@@ -6,9 +6,9 @@
 
 namespace VkRenderer {
     struct Syncher {
-        VkSemaphore m_imageAvailableSemaphore;
-        VkSemaphore m_renderFinishedSemaphore;
-        VkFence m_inFlightFence;
+        std::vector<VkSemaphore> m_imageAvailableSemaphore;
+        std::vector<VkSemaphore> m_renderFinishedSemaphore;
+        std::vector<VkFence> m_inFlightFence;
 
         void createSyncObjects(VkDevice& device);
         void destroy(VkDevice& device);

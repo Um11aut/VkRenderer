@@ -1,9 +1,12 @@
 #pragma once
 #include <string>
 #include <optional>
+#include <vector>
 #include <vulkan/vulkan.h>
 
 namespace Extra {
+	const int FRAMES_IN_FLIGHT = 2;
+
 	struct AppInfo {
 		std::string appName = "Blank";
 		std::string engineName = "Blank";
@@ -20,7 +23,7 @@ namespace Extra {
 		VkQueue m_graphicsQueue; 
 		VkSwapchainKHR m_swapChain;
 		VkRenderPass m_renderPass;
-		VkCommandBuffer m_commandBuffer;
+		std::vector<VkCommandBuffer> m_commandBuffers;
 	};
 
 	struct QueueFamilyIndices {
