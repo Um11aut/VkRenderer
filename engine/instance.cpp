@@ -105,7 +105,7 @@ VkRenderer::Instance::Instance(std::string appName, std::string engineName,
 	}
 }
 
-VkRenderer::Instance::~Instance()
+void VkRenderer::Instance::destroy()
 {
 	vkDestroyInstance(*m_instance, nullptr);
 }

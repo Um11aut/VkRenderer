@@ -202,8 +202,9 @@ void VkRenderer::SwapChain::create()
 	createImageViews();
 }
 
-VkRenderer::SwapChain::~SwapChain()
+void VkRenderer::SwapChain::destroy()
 {
+	Logger::printOnce("Destroyed SwapChain!");
 	for (const auto& imageView : m_imageViews) {
 		vkDestroyImageView(m_vars->m_device, imageView, nullptr);
 	}

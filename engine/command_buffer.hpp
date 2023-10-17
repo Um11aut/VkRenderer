@@ -24,7 +24,6 @@ namespace VkRenderer {
         CommandBuffer(Extra::VkVars* vars, std::shared_ptr<SwapChain> swapChain, std::shared_ptr<GraphicsPipeline> graphicsPipeline);
 
         void record(uint32_t imageIndex);
-
-        ~CommandBuffer();
+        void destroy();
     };
 }

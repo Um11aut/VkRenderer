@@ -186,7 +186,7 @@ void VkRenderer::Device::pickDevice()
 	}
 }
 
-VkRenderer::Device::~Device()
+void VkRenderer::Device::destoy()
 {
 	Logger::printOnce("destroyed device");
 	vkDestroyDevice(m_vars->m_device, nullptr);

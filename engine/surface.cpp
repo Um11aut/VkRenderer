@@ -11,7 +11,8 @@ VkRenderer::Surface::Surface(Extra::VkVars* vars, std::shared_ptr<VkRenderer::Wi
     }
 }
 
-VkRenderer::Surface::~Surface()
+void VkRenderer::Surface::destroy()
 {
+    Logger::printOnce("Destroyed Surface!");
     vkDestroySurfaceKHR(m_vars->m_instance, m_vars->m_surface, nullptr);
 }

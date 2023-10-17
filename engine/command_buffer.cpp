@@ -68,7 +68,7 @@ void VkRenderer::CommandBuffer::record(uint32_t imageIndex)
 
 	if (vkEndCommandBuffer(m_vars->m_commandBuffer) != VK_SUCCESS) {}
 }
-VkRenderer::CommandBuffer::~CommandBuffer()
+void VkRenderer::CommandBuffer::destroy()
 {
 	Logger::printOnce("destroyed command buffer");
 	vkDestroyCommandPool(m_vars->m_device, m_commandPool, nullptr);

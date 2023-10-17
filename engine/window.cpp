@@ -14,7 +14,7 @@ VkRenderer::Window::Window(Extra::AppInfo& info)
 	m_window = glfwCreateWindow(m_width, m_height, m_info.appName.c_str(), nullptr, nullptr);
 }
 
-VkRenderer::Window::~Window()
+void VkRenderer::Window::close()
 {
 	glfwDestroyWindow(m_window);
 }

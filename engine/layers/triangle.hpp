@@ -26,20 +26,25 @@ public:
     }
 
     void onDestroy() override {
-        std::cout << "Destructor Called!" << std::endl;
         syncher->destroy(variables->m_device);
+        commandBuffer->destroy();
+        trianglePipeline->destroy();
+        renderPass->destroy();
+        swapChain->destroy();
+        shaderModule->destroy();
     }
 private:
     Extra::VkVars* variables;
 
-    std::shared_ptr<VkRenderer::SwapChain> app_swapChain;
 
+    std::unique_ptr<VkRenderer::RenderPass> renderPass;
+    
+    std::shared_ptr<VkRenderer::ShaderModule> shaderModule;
+    std::shared_ptr<VkRenderer::GraphicsPipeline> trianglePipeline;
+    std::shared_ptr<VkRenderer::SwapChain> swapChain;
+    std::unique_ptr<VkRenderer::CommandBuffer> commandBuffer;
     std::unique_ptr <VkRenderer::Syncher> syncher;
-    std::unique_ptr<VkRenderer::RenderPass> app_renderPass;
-    VkRenderer::ShaderModule shaderModule{ variables };
-    std::shared_ptr<VkRenderer::GraphicsPipeline> m_mainPipeline;
-    std::unique_ptr<VkRenderer::CommandBuffer> app_commandBuffer;
-    std::unique_ptr<VkRenderer::GUI> app_gui;
+    std::unique_ptr<VkRenderer::GUI> gui;
 
 
     void draw();

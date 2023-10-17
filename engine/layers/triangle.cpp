@@ -1,17 +1,18 @@
 #include "triangle.hpp"
 
 Triangle::Triangle(Extra::VkVars* vars, std::shared_ptr<VkRenderer::SwapChain> swapChain)
-	: variables(vars), app_swapChain(swapChain)
+	: variables(vars), swapChain(swapChain)
 {
-	app_renderPass = std::make_unique<VkRenderer::RenderPass>(variables, app_swapChain);
+	renderPass = std::make_unique<VkRenderer::RenderPass>(variables, swapChain);
 
-	m_mainPipeline = std::make_shared<VkRenderer::GraphicsPipeline>(variables, shaderModule, app_swapChain);
+	swapChain->createFrameBuffers();
 
-	app_swapChain->createFrameBuffers();
+	shaderModule = std::make_shared<VkRenderer::ShaderModule>(variables);
+	trianglePipeline = std::make_shared<VkRenderer::GraphicsPipeline>(variables, shaderModule, swapChain);
 
-	app_commandBuffer = std::make_unique<VkRenderer::CommandBuffer>(variables, app_swapChain, m_mainPipeline);
+	commandBuffer = std::make_unique<VkRenderer::CommandBuffer>(variables, swapChain, trianglePipeline);
 
-	app_gui = std::make_unique<VkRenderer::GUI>(variables, app_swapChain);
+	gui = std::make_unique<VkRenderer::GUI>(variables, swapChain);
 
 	syncher = std::make_unique<VkRenderer::Syncher>();
 
@@ -27,7 +28,7 @@ void Triangle::draw()
 	vkAcquireNextImageKHR(variables->m_device, variables->m_swapChain, UINT64_MAX, syncher->m_imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
 
 	vkResetFences(variables->m_device, 1, &syncher->m_inFlightFence);
-	app_commandBuffer->record(imageIndex);
+	commandBuffer->record(imageIndex);
 
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;

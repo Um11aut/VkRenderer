@@ -52,17 +52,11 @@ VkRenderer::Debugger::Debugger(
 {
 	setupDebugMessenger();
 }
-
-VkRenderer::Debugger::~Debugger()
-{
-	if (m_validationLayer->isEnabled()) {
-		destroy();
-	}
-}
-
 void VkRenderer::Debugger::destroy()
 {
-	DestroyDebugUtilsMessengerEXT();
+	if (m_validationLayer->isEnabled()) {
+		DestroyDebugUtilsMessengerEXT();
+	}
 }
 
 void VkRenderer::Debugger::setupDebugMessenger()

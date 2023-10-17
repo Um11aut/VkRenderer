@@ -107,16 +107,15 @@ void VkRenderer::GraphicsPipeline::createPipeline() {
 	}
 }
 
-VkRenderer::GraphicsPipeline::GraphicsPipeline(Extra::VkVars* vars, const ShaderModule& module, std::shared_ptr<SwapChain> swapChain)
-	: m_vars(vars), m_swapChain(swapChain)
+VkRenderer::GraphicsPipeline::GraphicsPipeline(Extra::VkVars* vars, const std::shared_ptr<ShaderModule> module, std::shared_ptr<SwapChain> swapChain)
+	: m_vars(vars), m_swapChain(swapChain), m_shaderModule(module)
 {
-	m_shaderModule = std::make_unique<ShaderModule>(module);
 	createShaderStageInfo();
 	createFixedFunctions();
 	createPipeline();
 }
 
-VkRenderer::GraphicsPipeline::~GraphicsPipeline()
+void VkRenderer::GraphicsPipeline::destroy()
 {
 	vkDestroyPipelineLayout(m_vars->m_device, m_pipelineLayout, nullptr);
 	vkDestroyPipeline(m_vars->m_device, m_graphicsPipeline, nullptr);

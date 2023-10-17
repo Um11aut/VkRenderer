@@ -44,11 +44,11 @@ namespace VkRenderer {
 	public:
 		Instance(std::string appName, std::string engineName,
 			VkInstance* instance, std::shared_ptr<VkRenderer::ValidationLayer> validationLayer);
-		~Instance();
 
 		void appendExtension(const char* extensionName);
 
 		void create();
+		void destroy();
 
 		void printExtensions(bool printRequired, bool printAvailable);
 	};

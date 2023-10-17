@@ -46,6 +46,5 @@ namespace VkRenderer {
 		void create();
 		void destoy();
 
-		~Device();
 	};
 }

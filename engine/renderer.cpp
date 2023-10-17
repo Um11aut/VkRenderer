@@ -19,6 +19,11 @@ void VkRenderer::Renderer::run()
 	for (const auto& layer : layers) {
 		layer->onDestroy();
 	}
+	app_window->close();
+	app_debugger->destroy();
+	app_surface->destroy();
+	app_device->destoy();
+	app_instance->destroy();
 }
 
 void VkRenderer::Renderer::init()

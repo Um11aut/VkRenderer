@@ -13,6 +13,8 @@ namespace VkRenderer {
         std::shared_ptr<VkRenderer::Window> m_window; // so window is bound on a surface
     public:
         Surface(Extra::VkVars* vars, std::shared_ptr<VkRenderer::Window>& window);
-        ~Surface();
+
+        void destroy();
+
     };
 }

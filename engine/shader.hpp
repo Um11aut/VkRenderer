@@ -20,7 +20,7 @@ namespace VkRenderer {
 		VkShaderModule createShaderModule(const std::vector<char>& code);
 	public:
 		ShaderModule(Extra::VkVars* vars);
-		~ShaderModule();
+		void destroy();
 		std::pair<VkShaderModule, VkShaderModule> load(const std::string fragmentPath, const std::string vertexPath);
 	};
 }

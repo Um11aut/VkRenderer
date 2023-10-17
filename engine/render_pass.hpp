@@ -19,6 +19,6 @@ namespace VkRenderer {
 		VkRenderPassCreateInfo renderPassInfo{};
 	public:
 		RenderPass(Extra::VkVars* vars, std::shared_ptr<SwapChain> swapChain);
-		~RenderPass();
+		void destroy();
 	};
 }

@@ -40,7 +40,7 @@ VkRenderer::RenderPass::RenderPass(Extra::VkVars* vars, std::shared_ptr<SwapChai
 	}
 }
 
-VkRenderer::RenderPass::~RenderPass()
+void VkRenderer::RenderPass::destroy()
 {
 	vkDestroyRenderPass(m_vars->m_device, m_vars->m_renderPass, nullptr);
 }

@@ -23,7 +23,7 @@ namespace VkRenderer {
 		VkGraphicsPipelineCreateInfo pipelineInfo{};
 
 		std::shared_ptr<SwapChain> m_swapChain;
-		std::unique_ptr<ShaderModule> m_shaderModule;
+		std::shared_ptr<ShaderModule> m_shaderModule;
 
 		void createShaderStageInfo();
 		VkPipelineShaderStageCreateInfo fragCreateInfo{};
@@ -47,10 +47,10 @@ namespace VkRenderer {
 
 		void createPipeline();
 	public:
-		GraphicsPipeline(Extra::VkVars* vars, const ShaderModule& module, std::shared_ptr<SwapChain> swapChain);
+		GraphicsPipeline(Extra::VkVars* vars, const std::shared_ptr<ShaderModule> module, std::shared_ptr<SwapChain> swapChain);
 
 		inline VkPipeline getPipeline() const { return m_graphicsPipeline; };
 
-		~GraphicsPipeline();
+		void destroy();
 	};
 }

@@ -31,20 +31,20 @@ namespace VkRenderer {
 		Extra::VkVars m_variables;
 
 		void initVk();
-		void draw();
+		std::shared_ptr<VkRenderer::Window> app_window;
 
 	private:
 
-		std::shared_ptr<VkRenderer::Window> app_window;
-		std::shared_ptr<VkRenderer::ValidationLayer> app_validation_layer;
-		
 		std::unique_ptr<VkRenderer::Instance> app_instance;
 		std::unique_ptr<VkRenderer::Surface> app_surface;
-		std::unique_ptr<VkRenderer::Debugger> app_debugger;
 		std::unique_ptr<VkRenderer::Device> app_device;
 		std::shared_ptr<VkRenderer::SwapChain> app_swapChain;
 
 		std::vector<std::shared_ptr<Layer>> layers;
+
+		std::shared_ptr<VkRenderer::ValidationLayer> app_validation_layer;
+		std::unique_ptr<VkRenderer::Debugger> app_debugger;
+
 	public:
 		Renderer(Window* window);
 

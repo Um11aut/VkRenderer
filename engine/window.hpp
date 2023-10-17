@@ -19,12 +19,13 @@ namespace VkRenderer {
 		bool shouldClose();
 
 		explicit Window(Extra::AppInfo& info);
-		~Window();
 
 		inline int GetWidth() const { return m_width; }
 		inline int GetHeight() const { return m_height; }
 		inline GLFWwindow* getWindow() { return m_window; }
 		inline Extra::AppInfo getInfo() { return m_info; }
+
+		void close();
 
 		bool KeyPressed(int key);
 	};
