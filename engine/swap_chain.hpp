@@ -56,6 +56,7 @@ namespace VkRenderer {
 		inline std::vector<VkFramebuffer> getFrameBuffers() const { return m_frameBuffers; }
 		inline SwapChainDetails getDetails() const { return swapChainSupport; }
 
+		void recreate();
 		void destroy();
 
 	};

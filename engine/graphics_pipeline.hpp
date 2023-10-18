@@ -3,6 +3,7 @@
 #include <vulkan/vulkan.h>
 #include "shader.hpp"
 #include "swap_chain.hpp"
+#include "buffers/vertex_buffer.hpp"
 #include <array>
 #include <vector>
 #include <memory>
@@ -24,6 +25,7 @@ namespace VkRenderer {
 
 		std::shared_ptr<SwapChain> m_swapChain;
 		std::shared_ptr<ShaderModule> m_shaderModule;
+		std::shared_ptr<VertexBuffer> m_vertexBuffer;
 
 		void createShaderStageInfo();
 		VkPipelineShaderStageCreateInfo fragCreateInfo{};
@@ -47,7 +49,7 @@ namespace VkRenderer {
 
 		void createPipeline();
 	public:
-		GraphicsPipeline(Extra::VkVars* vars, const std::shared_ptr<ShaderModule> module, std::shared_ptr<SwapChain> swapChain);
+		GraphicsPipeline(Extra::VkVars* vars, const std::shared_ptr<ShaderModule> module, std::shared_ptr<SwapChain> swapChain, std::shared_ptr<VertexBuffer> buffer);
 
 		inline VkPipeline getPipeline() const { return m_graphicsPipeline; };
 

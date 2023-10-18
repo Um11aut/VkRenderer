@@ -89,7 +89,7 @@ void VkRenderer::GraphicsPipeline::createPipeline() {
 	pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 	pipelineInfo.stageCount = 2;
 	pipelineInfo.pStages = m;
-	pipelineInfo.pVertexInputState = &vertexInputInfo;
+	pipelineInfo.pVertexInputState = &m_vertexBuffer->getLayout();
 	pipelineInfo.pInputAssemblyState = &inputAssembly;
 	pipelineInfo.pViewportState = &viewportState;
 	pipelineInfo.pRasterizationState = &rasterizer;
@@ -107,8 +107,8 @@ void VkRenderer::GraphicsPipeline::createPipeline() {
 	}
 }
 
-VkRenderer::GraphicsPipeline::GraphicsPipeline(Extra::VkVars* vars, const std::shared_ptr<ShaderModule> module, std::shared_ptr<SwapChain> swapChain)
-	: m_vars(vars), m_swapChain(swapChain), m_shaderModule(module)
+VkRenderer::GraphicsPipeline::GraphicsPipeline(Extra::VkVars* vars, const std::shared_ptr<ShaderModule> module, std::shared_ptr<SwapChain> swapChain, std::shared_ptr<VertexBuffer> buffer)
+	: m_vars(vars), m_swapChain(swapChain), m_shaderModule(module), m_vertexBuffer(buffer)
 {
 	createShaderStageInfo();
 	createFixedFunctions();

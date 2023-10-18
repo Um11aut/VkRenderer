@@ -202,15 +202,27 @@ void VkRenderer::SwapChain::create()
 	createImageViews();
 }
 
+void VkRenderer::SwapChain::recreate()
+{
+	vkDeviceWaitIdle(m_vars->m_device);
+
+	destroy();
+
+	create();
+	createImageViews();
+	createFrameBuffers();
+}
+
 void VkRenderer::SwapChain::destroy()
 {
 	Logger::printOnce("Destroyed SwapChain!");
-	for (const auto& imageView : m_imageViews) {
-		vkDestroyImageView(m_vars->m_device, imageView, nullptr);
-	}
 
 	for (const auto& frameBuffer : m_frameBuffers) {
 		vkDestroyFramebuffer(m_vars->m_device, frameBuffer, nullptr);
+	}
+
+	for (const auto& imageView : m_imageViews) {
+		vkDestroyImageView(m_vars->m_device, imageView, nullptr);
 	}
 
 	vkDestroySwapchainKHR(m_vars->m_device, m_vars->m_swapChain, nullptr);

@@ -1,7 +1,7 @@
 #include "command_buffer.hpp"
 
-VkRenderer::CommandBuffer::CommandBuffer(Extra::VkVars* vars, std::shared_ptr<SwapChain> swapChain, std::shared_ptr<GraphicsPipeline> graphicsPipeline)
-	: m_vars(vars), m_swapChain(swapChain), m_graphicsPipeline(graphicsPipeline)
+VkRenderer::CommandBuffer::CommandBuffer(Extra::VkVars* vars, std::shared_ptr<SwapChain> swapChain, std::shared_ptr<GraphicsPipeline> graphicsPipeline, std::shared_ptr<VertexBuffer> vertexBuffer)
+	: m_vars(vars), m_swapChain(swapChain), m_graphicsPipeline(graphicsPipeline), m_vertexBuffer(vertexBuffer)
 {
 	m_vars->m_commandBuffers.resize(Extra::FRAMES_IN_FLIGHT);
 	m_queueFamilyIndices = Device::findSupportedQueueFamilies(m_vars->m_physicalDevice, m_vars->m_surface);
@@ -63,7 +63,9 @@ void VkRenderer::CommandBuffer::record(VkCommandBuffer buffer, uint32_t imageInd
 		scissor.extent = m_swapChain->getExtent();
 		vkCmdSetScissor(buffer, 0, 1, &scissor);
 
-		vkCmdDraw(buffer, 3, 1, 0, 0);
+		m_vertexBuffer->bind(buffer);
+
+		vkCmdDraw(buffer, 4, 1, 0, 0);
 
 	vkCmdEndRenderPass(buffer);
 

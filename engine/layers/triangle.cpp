@@ -5,13 +5,14 @@ Triangle::Triangle(Extra::VkVars* vars, std::shared_ptr<VkRenderer::SwapChain> s
 {
 	renderPass = std::make_unique<VkRenderer::RenderPass>(variables, swapChain);
 
+	vertexBuffer = std::make_shared<VkRenderer::VertexBuffer>(variables, sizeof(vertices));
+
+	vertexBuffer->update(vertices.data(), sizeof(vertices));
+
 	shaderModule = std::make_shared<VkRenderer::ShaderModule>(variables, "common/shaders/out/fragment.spv", "common/shaders/out/vertex.spv");
-	trianglePipeline = std::make_shared<VkRenderer::GraphicsPipeline>(variables, shaderModule, swapChain);
+	trianglePipeline = std::make_shared<VkRenderer::GraphicsPipeline>(variables, shaderModule, swapChain, vertexBuffer);
 
-	shaderModule1 = std::make_shared<VkRenderer::ShaderModule>(variables, "common/shaders/out/fragment.spv", "common/shaders/out/vertex.spv");
-	triangle1Pipeline = std::make_shared<VkRenderer::GraphicsPipeline>(variables, shaderModule1, swapChain);
-
-	commandBuffer = std::make_unique<VkRenderer::CommandBuffer>(variables, swapChain, triangle1Pipeline);
+	commandBuffer = std::make_unique<VkRenderer::CommandBuffer>(variables, swapChain, trianglePipeline, vertexBuffer);
 
 	syncher = std::make_unique<VkRenderer::Syncher>();
 
@@ -21,12 +22,18 @@ Triangle::Triangle(Extra::VkVars* vars, std::shared_ptr<VkRenderer::SwapChain> s
 
 void Triangle::draw()
 {
-	uint32_t currentFrame = 0;
-
 	vkWaitForFences(variables->m_device, 1, &syncher->m_inFlightFence[currentFrame], VK_TRUE, UINT64_MAX);
 
 	uint32_t imageIndex;
-	vkAcquireNextImageKHR(variables->m_device, variables->m_swapChain, UINT64_MAX, syncher->m_imageAvailableSemaphore[currentFrame], VK_NULL_HANDLE, &imageIndex);
+	VkResult result = vkAcquireNextImageKHR(variables->m_device, variables->m_swapChain, UINT64_MAX, syncher->m_imageAvailableSemaphore[currentFrame], VK_NULL_HANDLE, &imageIndex);
+
+	if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+		swapChain->recreate();
+		return;
+	}
+	else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+		throw std::runtime_error("failed to acquire swap chain image!");
+	}
 
 	vkResetFences(variables->m_device, 1, &syncher->m_inFlightFence[currentFrame]);
 	commandBuffer->record(variables->m_commandBuffers[currentFrame], imageIndex);
@@ -60,7 +67,19 @@ void Triangle::draw()
 	presentInfo.pSwapchains = swapChains;
 	presentInfo.pImageIndices = &imageIndex;
 
-	vkQueuePresentKHR(variables->m_presentQueue, &presentInfo);
+	result = vkQueuePresentKHR(variables->m_presentQueue, &presentInfo);
+
+	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) {
+		swapChain->recreate();
+	}
+	else if (result != VK_SUCCESS) {
+		throw std::runtime_error("failed to present swap chain image!");
+	}
 
 	currentFrame = (currentFrame + 1) % Extra::FRAMES_IN_FLIGHT;
+	frames++;
+
+	if (frames == 10000) {
+		vertexBuffer->update(vertices1.data(), sizeof(vertices1));
+	}
 }

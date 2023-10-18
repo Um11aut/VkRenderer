@@ -2,10 +2,15 @@
 #include <string>
 #include <optional>
 #include <vector>
+#include "glm/glm.hpp"
 #include <vulkan/vulkan.h>
 
 namespace Extra {
 	const int FRAMES_IN_FLIGHT = 2;
+
+	struct Vertex {
+		glm::vec2 position;
+	};
 
 	struct AppInfo {
 		std::string appName = "Blank";

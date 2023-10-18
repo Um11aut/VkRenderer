@@ -14,14 +14,15 @@ namespace VkRenderer {
 
         std::shared_ptr<SwapChain> m_swapChain;
         std::shared_ptr<GraphicsPipeline> m_graphicsPipeline;
-           
+        std::shared_ptr<VertexBuffer> m_vertexBuffer;
+
         VkCommandPool m_commandPool{};
         Extra::QueueFamilyIndices m_queueFamilyIndices;
         VkCommandPoolCreateInfo m_poolInfo{};
 
         VkCommandBufferAllocateInfo m_commandBufferAllocateInfo{};
     public:
-        CommandBuffer(Extra::VkVars* vars, std::shared_ptr<SwapChain> swapChain, std::shared_ptr<GraphicsPipeline> graphicsPipeline);
+        CommandBuffer(Extra::VkVars* vars, std::shared_ptr<SwapChain> swapChain, std::shared_ptr<GraphicsPipeline> graphicsPipeline, std::shared_ptr<VertexBuffer> vertexBuffer);
 
         void record(VkCommandBuffer buffer, uint32_t imageIndex);
         void destroy();
