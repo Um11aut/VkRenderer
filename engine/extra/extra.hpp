@@ -9,7 +9,8 @@ namespace Extra {
 	const int FRAMES_IN_FLIGHT = 2;
 
 	struct Vertex {
-		glm::vec2 position;
+		glm::vec2 pos;
+		glm::vec3 color;
 	};
 
 	struct AppInfo {

@@ -2,6 +2,7 @@
 
 #include <vulkan/vulkan.h>
 #include "buffer.hpp"
+#include <array>
 
 namespace VkRenderer {
 	class VertexBuffer : public Buffer {
@@ -17,7 +18,7 @@ namespace VkRenderer {
 
 		void bind(VkCommandBuffer commandBuffer) const override {
 			VkBuffer vertexBuffers[] = { m_buffer };
-			VkDeviceSize offsets[] = {0};
+			VkDeviceSize offsets[] = { 0 };
 			vkCmdBindVertexBuffers(commandBuffer, 0, 1, &m_buffer, offsets);
 		}
 
@@ -35,7 +36,6 @@ namespace VkRenderer {
 		VkPipelineVertexInputStateCreateInfo m_createInfo{};
 
 		VkVertexInputBindingDescription bindingDescription{};
-		VkVertexInputAttributeDescription positionAttribute{};
-		VkVertexInputAttributeDescription colorAttribute{};
+		std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions{};
 	};
 }

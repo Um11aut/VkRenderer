@@ -5,9 +5,9 @@ Triangle::Triangle(Extra::VkVars* vars, std::shared_ptr<VkRenderer::SwapChain> s
 {
 	renderPass = std::make_unique<VkRenderer::RenderPass>(variables, swapChain);
 
-	vertexBuffer = std::make_shared<VkRenderer::VertexBuffer>(variables, sizeof(vertices));
+	vertexBuffer = std::make_shared<VkRenderer::VertexBuffer>(variables, sizeof(vertices[0]) * vertices.size());
 
-	vertexBuffer->update(vertices.data(), sizeof(vertices));
+	vertexBuffer->update(vertices.data(), sizeof(vertices[0]) * vertices.size());
 
 	shaderModule = std::make_shared<VkRenderer::ShaderModule>(variables, "common/shaders/out/fragment.spv", "common/shaders/out/vertex.spv");
 	trianglePipeline = std::make_shared<VkRenderer::GraphicsPipeline>(variables, shaderModule, swapChain, vertexBuffer);
@@ -78,8 +78,4 @@ void Triangle::draw()
 
 	currentFrame = (currentFrame + 1) % Extra::FRAMES_IN_FLIGHT;
 	frames++;
-
-	if (frames == 10000) {
-		vertexBuffer->update(vertices1.data(), sizeof(vertices1));
-	}
 }

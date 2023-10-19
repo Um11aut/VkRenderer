@@ -12,14 +12,19 @@ void VkRenderer::VertexBuffer::setLayout()
 	bindingDescription.stride = sizeof(Extra::Vertex);
 	bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
-	positionAttribute.binding = 0;
-	positionAttribute.location = m_location;
-	positionAttribute.format = VK_FORMAT_R32G32B32_SFLOAT;
-	positionAttribute.offset = offsetof(Extra::Vertex, position);
+	attributeDescriptions[0].binding = 0;
+	attributeDescriptions[0].location = m_location;
+	attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
+	attributeDescriptions[0].offset = offsetof(Extra::Vertex, pos);
+
+	attributeDescriptions[1].binding = 0;
+	attributeDescriptions[1].location = m_location + 1;
+	attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+	attributeDescriptions[1].offset = offsetof(Extra::Vertex, color);
 
 	m_createInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-	m_createInfo.vertexAttributeDescriptionCount = 1;
+	m_createInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
 	m_createInfo.vertexBindingDescriptionCount = 1;
 	m_createInfo.pVertexBindingDescriptions = &bindingDescription;
-	m_createInfo.pVertexAttributeDescriptions = &positionAttribute;
+	m_createInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
 }

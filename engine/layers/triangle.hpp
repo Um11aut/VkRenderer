@@ -49,16 +49,11 @@ private:
     std::shared_ptr<VkRenderer::VertexBuffer> vertexBuffer;
     std::shared_ptr<VkRenderer::GraphicsPipeline> trianglePipeline;
 
-    std::vector<Extra::Vertex> vertices = {
-        { {-0.5f, -0.5f} },  // bottom-left
-        { { 0.5f, -0.5f} },  // bottom-right
-        { { 0.5f,  0.1f} },  // top-right
-    };
-
-    std::vector<Extra::Vertex> vertices1 = {
-        { {-0.5f, -0.5f} },  // bottom-left
-        { { 0.5f, -0.5f} },  // bottom-right
-        { { 0.5f,  1.9f} },  // top-right
+    const std::vector<Extra::Vertex> vertices = {
+        {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+        {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+        {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+        {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
     };
 
     std::shared_ptr<VkRenderer::SwapChain> swapChain;

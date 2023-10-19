@@ -65,7 +65,7 @@ void VkRenderer::CommandBuffer::record(VkCommandBuffer buffer, uint32_t imageInd
 
 		m_vertexBuffer->bind(buffer);
 
-		vkCmdDraw(buffer, 4, 1, 0, 0);
+		vkCmdDraw(buffer, static_cast<uint32_t>(m_vertexBuffer->getSize()), 1, 0, 0);
 
 	vkCmdEndRenderPass(buffer);
 
