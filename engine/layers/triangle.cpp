@@ -12,7 +12,7 @@ Triangle::Triangle(Extra::VkVars* vars, std::shared_ptr<VkRenderer::SwapChain> s
 	shaderModule = std::make_shared<VkRenderer::ShaderModule>(variables, "common/shaders/out/fragment.spv", "common/shaders/out/vertex.spv");
 	trianglePipeline = std::make_shared<VkRenderer::GraphicsPipeline>(variables, shaderModule, swapChain, vertexBuffer);
 
-	commandBuffer = std::make_unique<VkRenderer::CommandBuffer>(variables, swapChain, trianglePipeline, vertexBuffer);
+	commandBuffer = std::make_unique<VkRenderer::DrawCommandBuffer>(variables, swapChain, trianglePipeline, vertexBuffer);
 
 	syncher = std::make_unique<VkRenderer::Syncher>();
 
@@ -36,25 +36,11 @@ void Triangle::draw()
 	}
 
 	vkResetFences(variables->m_device, 1, &syncher->m_inFlightFence[currentFrame]);
-	commandBuffer->record(variables->m_commandBuffers[currentFrame], imageIndex);
+	commandBuffer->record(currentFrame, imageIndex);
 
-	VkSubmitInfo submitInfo{};
-	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-
-	VkSemaphore waitSemaphores[] = { syncher->m_imageAvailableSemaphore[currentFrame]};
-	VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-	submitInfo.waitSemaphoreCount = 1;
-	submitInfo.pWaitSemaphores = waitSemaphores;
-	submitInfo.pWaitDstStageMask = waitStages;
-
-	submitInfo.commandBufferCount = 1;
-	submitInfo.pCommandBuffers = &variables->m_commandBuffers[currentFrame];
+	commandBuffer->submit(currentFrame, *syncher);
 
 	VkSemaphore signalSemaphores[] = { syncher->m_renderFinishedSemaphore[currentFrame] };
-	submitInfo.signalSemaphoreCount = 1;
-	submitInfo.pSignalSemaphores = signalSemaphores;
-
-	if (vkQueueSubmit(variables->m_graphicsQueue, 1, &submitInfo, syncher->m_inFlightFence[currentFrame]) != VK_SUCCESS) {}
 
 	VkPresentInfoKHR presentInfo{};
 	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;

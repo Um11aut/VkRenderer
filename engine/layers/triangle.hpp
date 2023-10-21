@@ -10,7 +10,6 @@
 #include "../shader.hpp"
 #include "../render_pass.hpp"
 #include "../command_buffer.hpp"
-#include "../drawer.hpp"
 #include "../gui/gui.hpp"
 #include "../logger.hpp"
 #include "../buffers/vertex_buffer.hpp"
@@ -57,7 +56,7 @@ private:
     };
 
     std::shared_ptr<VkRenderer::SwapChain> swapChain;
-    std::unique_ptr<VkRenderer::CommandBuffer> commandBuffer;
+    std::unique_ptr<VkRenderer::DrawCommandBuffer> commandBuffer;
     std::unique_ptr <VkRenderer::Syncher> syncher;
 
     void draw();
