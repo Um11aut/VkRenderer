@@ -6,6 +6,8 @@
 #include "swap_chain.hpp"
 #include "graphics_pipeline.hpp"
 #include "drawer.hpp"
+#include <iostream>
+#include <functional>
 #include <vulkan/vulkan.h>
 
 namespace VkRenderer {
@@ -14,16 +16,14 @@ namespace VkRenderer {
         Extra::VkVars* m_vars;
 
         VkCommandBuffer m_commandBuffer;
-        VkCommandPool m_commandPool{};
-        Extra::QueueFamilyIndices m_queueFamilyIndices;
-        VkCommandPoolCreateInfo m_poolInfo{};
 
         VkCommandBufferAllocateInfo m_commandBufferAllocateInfo{};
     public:
         CommandBuffer(Extra::VkVars* vars);
 
-        template<typename ...Funcs, typename ...Args>
-        void singleUse(Funcs&&... lambdaFunction, Args&&... args);
+        void startSingleUse();
+        void endSingleUse();
+
         void destroy();
     };
 

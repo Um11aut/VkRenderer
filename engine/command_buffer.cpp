@@ -89,7 +89,7 @@ VkRenderer::CommandBuffer::CommandBuffer(Extra::VkVars* vars)
 	: m_vars(vars)
 {
 	m_commandBufferAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	m_commandBufferAllocateInfo.commandPool = m_commandPool;
+	m_commandBufferAllocateInfo.commandPool = m_vars->m_commandPool;
 	m_commandBufferAllocateInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 	m_commandBufferAllocateInfo.commandBufferCount = 1;
 
@@ -99,38 +99,38 @@ VkRenderer::CommandBuffer::CommandBuffer(Extra::VkVars* vars)
 	}
 }
 
-template<typename ...Funcs, typename ...Args>
-inline void VkRenderer::CommandBuffer::singleUse(Funcs&&... lambdaFunction, Args && ...args)
+void VkRenderer::CommandBuffer::startSingleUse()
 {
 	VkCommandBufferAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	allocInfo.commandPool = m_commandPool;
+	allocInfo.commandPool = m_vars->m_commandPool;
 	allocInfo.commandBufferCount = 1;
 
-	VkCommandBuffer commandBuffer;
-	vkAllocateCommandBuffers(m_vars->m_device, &allocInfo, &commandBuffer);
+	vkAllocateCommandBuffers(m_vars->m_device, &allocInfo, &m_commandBuffer);
 
 	VkCommandBufferBeginInfo beginInfo{};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
-	vkBeginCommandBuffer(commandBuffer, &beginInfo);
+		vkBeginCommandBuffer(m_commandBuffer, &beginInfo);
+}
 
-		(lambdaFunction(std::forward<Args>(args)...), ...);
-
-	vkEndCommandBuffer(commandBuffer);
+void VkRenderer::CommandBuffer::endSingleUse()
+{
+		vkEndCommandBuffer(m_commandBuffer);
 
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 	submitInfo.commandBufferCount = 1;
-	submitInfo.pCommandBuffers = &commandBuffer;
+	submitInfo.pCommandBuffers = &m_commandBuffer;
 
 	vkQueueSubmit(m_vars->m_graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
 	vkQueueWaitIdle(m_vars->m_graphicsQueue);
 
-	vkFreeCommandBuffers(m_vars->m_device, m_commandPool, 1, &commandBuffer);
+	vkFreeCommandBuffers(m_vars->m_device, m_vars->m_commandPool, 1, &m_commandBuffer);
 }
+
 
 void VkRenderer::CommandBuffer::destroy()
 {

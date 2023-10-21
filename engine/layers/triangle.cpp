@@ -14,6 +14,9 @@ Triangle::Triangle(Extra::VkVars* vars, std::shared_ptr<VkRenderer::SwapChain> s
 
 	commandPool = std::make_unique<VkRenderer::CommandPool>(variables);
 
+	singleCommandBuffer = std::make_unique<VkRenderer::CommandBuffer>(variables);
+
+	
 	commandBuffer = std::make_unique<VkRenderer::DrawCommandBuffer>(variables, swapChain, trianglePipeline, vertexBuffer);
 
 	syncher = std::make_unique<VkRenderer::Syncher>();

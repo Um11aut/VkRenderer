@@ -58,6 +58,7 @@ private:
 
     std::shared_ptr<VkRenderer::SwapChain> swapChain;
     std::unique_ptr<VkRenderer::CommandPool> commandPool;
+    std::unique_ptr<VkRenderer::CommandBuffer> singleCommandBuffer;
     std::unique_ptr<VkRenderer::DrawCommandBuffer> commandBuffer;
     std::unique_ptr <VkRenderer::Syncher> syncher;
 
