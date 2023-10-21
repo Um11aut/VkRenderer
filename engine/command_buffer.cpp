@@ -4,19 +4,8 @@ VkRenderer::DrawCommandBuffer::DrawCommandBuffer(Extra::VkVars* vars, std::share
 	: m_vars(vars), m_swapChain(swapChain), m_graphicsPipeline(graphicsPipeline), m_vertexBuffer(vertexBuffer)
 {
 	m_commandBuffers.resize(Extra::FRAMES_IN_FLIGHT);
-	m_queueFamilyIndices = Device::findSupportedQueueFamilies(m_vars->m_physicalDevice, m_vars->m_surface);
-
-	m_poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-	m_poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-	m_poolInfo.queueFamilyIndex = 0;
-
-	if (vkCreateCommandPool(m_vars->m_device, &m_poolInfo, nullptr, &m_commandPool) != VK_SUCCESS) {}
-	else {
-		Logger::printOnce("Created Command Pool", MessageType::Success);
-	}
-
 	m_commandBufferAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	m_commandBufferAllocateInfo.commandPool = m_commandPool;
+	m_commandBufferAllocateInfo.commandPool = m_vars->m_commandPool;
 	m_commandBufferAllocateInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 	m_commandBufferAllocateInfo.commandBufferCount = static_cast<uint32_t>(m_commandBuffers.size());
 
@@ -94,6 +83,55 @@ void VkRenderer::DrawCommandBuffer::record(const uint32_t currentFrame, uint32_t
 }
 void VkRenderer::DrawCommandBuffer::destroy()
 {
-	Logger::printOnce("destroyed command buffer");
-	vkDestroyCommandPool(m_vars->m_device, m_commandPool, nullptr);
+}
+
+VkRenderer::CommandBuffer::CommandBuffer(Extra::VkVars* vars)
+	: m_vars(vars)
+{
+	m_commandBufferAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+	m_commandBufferAllocateInfo.commandPool = m_commandPool;
+	m_commandBufferAllocateInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+	m_commandBufferAllocateInfo.commandBufferCount = 1;
+
+	if (vkAllocateCommandBuffers(m_vars->m_device, &m_commandBufferAllocateInfo, &m_commandBuffer) != VK_SUCCESS) {}
+	else {
+		Logger::printOnce("Created Command Buffer!", MessageType::Success);
+	}
+}
+
+template<typename ...Funcs, typename ...Args>
+inline void VkRenderer::CommandBuffer::singleUse(Funcs&&... lambdaFunction, Args && ...args)
+{
+	VkCommandBufferAllocateInfo allocInfo{};
+	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+	allocInfo.commandPool = m_commandPool;
+	allocInfo.commandBufferCount = 1;
+
+	VkCommandBuffer commandBuffer;
+	vkAllocateCommandBuffers(m_vars->m_device, &allocInfo, &commandBuffer);
+
+	VkCommandBufferBeginInfo beginInfo{};
+	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+	vkBeginCommandBuffer(commandBuffer, &beginInfo);
+
+		(lambdaFunction(std::forward<Args>(args)...), ...);
+
+	vkEndCommandBuffer(commandBuffer);
+
+	VkSubmitInfo submitInfo{};
+	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	submitInfo.commandBufferCount = 1;
+	submitInfo.pCommandBuffers = &commandBuffer;
+
+	vkQueueSubmit(m_vars->m_graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+	vkQueueWaitIdle(m_vars->m_graphicsQueue);
+
+	vkFreeCommandBuffers(m_vars->m_device, m_commandPool, 1, &commandBuffer);
+}
+
+void VkRenderer::CommandBuffer::destroy()
+{
 }

@@ -9,8 +9,23 @@
 #include <vulkan/vulkan.h>
 
 namespace VkRenderer {
+    class CommandBuffer {
+    private:
+        Extra::VkVars* m_vars;
 
+        VkCommandBuffer m_commandBuffer;
+        VkCommandPool m_commandPool{};
+        Extra::QueueFamilyIndices m_queueFamilyIndices;
+        VkCommandPoolCreateInfo m_poolInfo{};
 
+        VkCommandBufferAllocateInfo m_commandBufferAllocateInfo{};
+    public:
+        CommandBuffer(Extra::VkVars* vars);
+
+        template<typename ...Funcs, typename ...Args>
+        void singleUse(Funcs&&... lambdaFunction, Args&&... args);
+        void destroy();
+    };
 
     class DrawCommandBuffer {
     private:
@@ -21,9 +36,6 @@ namespace VkRenderer {
         std::shared_ptr<VertexBuffer> m_vertexBuffer;
 
         std::vector<VkCommandBuffer> m_commandBuffers;
-        VkCommandPool m_commandPool{};
-        Extra::QueueFamilyIndices m_queueFamilyIndices;
-        VkCommandPoolCreateInfo m_poolInfo{};
 
         VkCommandBufferAllocateInfo m_commandBufferAllocateInfo{};
     public:
