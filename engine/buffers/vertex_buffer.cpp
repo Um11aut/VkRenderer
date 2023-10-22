@@ -1,9 +1,12 @@
 #include "vertex_buffer.hpp"
 
 VkRenderer::VertexBuffer::VertexBuffer(Extra::VkVars* vars, VkDeviceSize size, int location)
-	: Buffer(&vars->m_device, &vars->m_physicalDevice, size, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT), m_location(location), m_size(size)
+	: Buffer(&vars->m_device, &vars->m_physicalDevice, size, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT), m_location(location), m_size(size)
 
 {
+	singleCommandBuffer = std::make_unique<VkRenderer::CommandBuffer>(vars);
+	stagingBuffer = std::make_unique<VkRenderer::StagingBuffer>(vars, size);
+
 	setLayout();
 }
 void VkRenderer::VertexBuffer::setLayout()

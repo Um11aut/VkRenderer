@@ -36,7 +36,7 @@ add_executable (VkRenderer "main.cpp" "engine/entry.hpp"
 "engine/layers/parent/layer_factory.hpp" "engine/layers/parent/layer.hpp" 
 "engine/buffers/buffer.hpp" "engine/buffers/buffer.cpp" 
 "engine/buffers/vertex_buffer.cpp" "engine/buffers/vertex_buffer.hpp"
-"engine/command_pool.cpp" "engine/command_pool.hpp")
+"engine/command_pool.cpp" "engine/command_pool.hpp" "engine/draw_command_buffer.cpp")
 
 
 add_custom_command(TARGET VkRenderer

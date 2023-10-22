@@ -9,7 +9,7 @@
 #include "../graphics_pipeline.hpp"
 #include "../shader.hpp"
 #include "../render_pass.hpp"
-#include "../command_buffer.hpp"
+#include "../draw_command_buffer.hpp"
 #include "../gui/gui.hpp"
 #include "../logger.hpp"
 #include "../command_pool.hpp"
@@ -46,6 +46,7 @@ private:
     std::unique_ptr<VkRenderer::RenderPass> renderPass;
     
     std::shared_ptr<VkRenderer::ShaderModule> shaderModule;
+    std::unique_ptr<VkRenderer::CommandPool> commandPool;
     std::shared_ptr<VkRenderer::VertexBuffer> vertexBuffer;
     std::shared_ptr<VkRenderer::GraphicsPipeline> trianglePipeline;
 
@@ -57,8 +58,6 @@ private:
     };
 
     std::shared_ptr<VkRenderer::SwapChain> swapChain;
-    std::unique_ptr<VkRenderer::CommandPool> commandPool;
-    std::unique_ptr<VkRenderer::CommandBuffer> singleCommandBuffer;
     std::unique_ptr<VkRenderer::DrawCommandBuffer> commandBuffer;
     std::unique_ptr <VkRenderer::Syncher> syncher;
 

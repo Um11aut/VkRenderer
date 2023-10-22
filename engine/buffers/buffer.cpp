@@ -13,6 +13,17 @@ void VkRenderer::Buffer::destroyBuffer()
 	vkDestroyBuffer(*m_device, m_buffer, nullptr);
 }
 
+void VkRenderer::Buffer::copyTo(std::unique_ptr<VkRenderer::CommandBuffer>& commandBuffer, VkBuffer& dst, VkDeviceSize size)
+{
+	commandBuffer->startSingleUse();
+
+		VkBufferCopy copyRegion{};
+		copyRegion.size = size;
+		vkCmdCopyBuffer(commandBuffer->get(), m_buffer, dst, 1, &copyRegion);
+
+	commandBuffer->endSingleUse();
+}
+
 void VkRenderer::Buffer::create()
 {
 	VkBufferCreateInfo bufferInfo{};

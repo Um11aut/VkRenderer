@@ -2,6 +2,8 @@
 #include "../extra/extra.hpp"
 #include <vulkan/vulkan.h>
 #include <stdexcept>
+#include <memory>
+#include "../command_buffer.hpp"
 
 namespace VkRenderer {
 	class Buffer {
@@ -10,6 +12,8 @@ namespace VkRenderer {
 		virtual ~Buffer() = default;
 
 		void destroyBuffer();
+
+		void copyTo(std::unique_ptr<VkRenderer::CommandBuffer>& comamndBuffer, VkBuffer& dst, VkDeviceSize size);
 
 		virtual void update(const void* data, VkDeviceSize size) = 0;
 		virtual void bind(VkCommandBuffer buffer) const = 0;
