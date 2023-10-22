@@ -3,6 +3,7 @@
 #include <vulkan/vulkan.h>
 #include <stdexcept>
 #include <memory>
+#include <future>
 #include "../command_buffer.hpp"
 
 namespace VkRenderer {
@@ -32,6 +33,9 @@ namespace VkRenderer {
 		void create();
 		void allocate();
 		void bindBuffer();
+
+		void createAsync();
+		void destroyAsync();
 
 		uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const;
 	};

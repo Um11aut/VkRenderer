@@ -2,35 +2,11 @@
 
 #include <vulkan/vulkan.h>
 #include "buffer.hpp"
+#include "staging_buffer.hpp"
 #include "../command_buffer.hpp"
 #include <array>
 
 namespace VkRenderer {
-	class StagingBuffer : public Buffer {
-	public:
-		StagingBuffer(Extra::VkVars* vars, VkDeviceSize size) :
-			Buffer(
-				&vars->m_device,
-				&vars->m_physicalDevice,
-				size,
-				VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-				VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT) {}
-		void update(const void* data, VkDeviceSize size) override {
-			void* mappedData;
-			vkMapMemory(*m_device, m_memory, 0, size, 0, &mappedData);
-			memcpy(mappedData, data, static_cast<size_t>(size));
-			vkUnmapMemory(*m_device, m_memory);
-		}
-
-		void destroy() {
-			destroyBuffer();
-		}
-
-		void bind(VkCommandBuffer commandBuffer) const override {
-
-		}
-	};
-
 	class VertexBuffer : public Buffer {
 	public:
 		VertexBuffer(Extra::VkVars* vars, VkDeviceSize size, int location = 0);
@@ -50,7 +26,7 @@ namespace VkRenderer {
 		}
 
 		void destroy() {
-			destroyBuffer();
+			destroyAsync();
 		}
 
 		const VkPipelineVertexInputStateCreateInfo& getLayout() const { return m_createInfo; }

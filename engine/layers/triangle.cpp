@@ -7,13 +7,15 @@ Triangle::Triangle(Extra::VkVars* vars, std::shared_ptr<VkRenderer::SwapChain> s
 	commandPool = std::make_unique<VkRenderer::CommandPool>(variables);
 
 	vertexBuffer = std::make_shared<VkRenderer::VertexBuffer>(variables, sizeof(vertices[0]) * vertices.size());
+	indexBuffer = std::make_shared<VkRenderer::IndexBuffer>(variables, sizeof(indices[0]) * indices.size(), indices.size());
 
 	vertexBuffer->update(vertices.data(), sizeof(vertices[0]) * vertices.size());
+	indexBuffer->update(indices.data(), sizeof(indices[0]) * indices.size());
 
 	shaderModule = std::make_shared<VkRenderer::ShaderModule>(variables, "common/shaders/out/fragment.spv", "common/shaders/out/vertex.spv");
 	trianglePipeline = std::make_shared<VkRenderer::GraphicsPipeline>(variables, shaderModule, swapChain, vertexBuffer);
 	
-	commandBuffer = std::make_unique<VkRenderer::DrawCommandBuffer>(variables, swapChain, trianglePipeline, vertexBuffer);
+	commandBuffer = std::make_unique<VkRenderer::DrawCommandBuffer>(variables, swapChain, trianglePipeline, vertexBuffer, indexBuffer);
 
 	syncher = std::make_unique<VkRenderer::Syncher>();
 

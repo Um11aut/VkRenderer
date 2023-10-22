@@ -151,9 +151,6 @@ void VkRenderer::SwapChain::create()
 
 	imageCount = swapChainSupport.capabilities.minImageCount + 1;
 
-	Logger::print({ "Minimum available SwapChain image count: ", std::to_string(swapChainSupport.capabilities.minImageCount) });
-	Logger::print({ "Maximum available SwapChain image count: ", std::to_string(swapChainSupport.capabilities.maxImageCount) });
-
 	if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount) {
 		imageCount = swapChainSupport.capabilities.maxImageCount;
 	}
@@ -209,7 +206,6 @@ void VkRenderer::SwapChain::recreate()
 	destroy();
 
 	create();
-	createImageViews();
 	createFrameBuffers();
 }
 

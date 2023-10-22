@@ -1,7 +1,7 @@
 #include "draw_command_buffer.hpp"
 
-VkRenderer::DrawCommandBuffer::DrawCommandBuffer(Extra::VkVars* vars, std::shared_ptr<SwapChain> swapChain, std::shared_ptr<GraphicsPipeline> graphicsPipeline, std::shared_ptr<VertexBuffer> vertexBuffer)
-	: m_vars(vars), m_swapChain(swapChain), m_graphicsPipeline(graphicsPipeline), m_vertexBuffer(vertexBuffer)
+VkRenderer::DrawCommandBuffer::DrawCommandBuffer(Extra::VkVars* vars, std::shared_ptr<SwapChain> swapChain, std::shared_ptr<GraphicsPipeline> graphicsPipeline, std::shared_ptr<VertexBuffer> vertexBuffer, std::shared_ptr<IndexBuffer> indexBuffer)
+	: m_vars(vars), m_swapChain(swapChain), m_graphicsPipeline(graphicsPipeline), m_vertexBuffer(vertexBuffer), m_indexBuffer(indexBuffer)
 {
 	m_commandBuffers.resize(Extra::FRAMES_IN_FLIGHT);
 	m_commandBufferAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -57,25 +57,27 @@ void VkRenderer::DrawCommandBuffer::record(const uint32_t currentFrame, uint32_t
 
 	vkCmdBeginRenderPass(m_commandBuffers[currentFrame], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-	vkCmdBindPipeline(m_commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, m_graphicsPipeline->getPipeline());
+		vkCmdBindPipeline(m_commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, m_graphicsPipeline->getPipeline());
 
-	VkViewport viewPort{};
-	viewPort.x = 0.0f;
-	viewPort.y = 0.0f;
-	viewPort.width = static_cast<float>(m_swapChain->getExtent().width);
-	viewPort.height = static_cast<float>(m_swapChain->getExtent().height);
-	viewPort.minDepth = 0.0f;
-	viewPort.maxDepth = 1.0f;
-	vkCmdSetViewport(m_commandBuffers[currentFrame], 0, 1, &viewPort);
+		VkViewport viewPort{};
+		viewPort.x = 0.0f;
+		viewPort.y = 0.0f;
+		viewPort.width = static_cast<float>(m_swapChain->getExtent().width);
+		viewPort.height = static_cast<float>(m_swapChain->getExtent().height);
+		viewPort.minDepth = 0.0f;
+		viewPort.maxDepth = 1.0f;
+		vkCmdSetViewport(m_commandBuffers[currentFrame], 0, 1, &viewPort);
 
-	VkRect2D scissor{};
-	scissor.offset = { 0, 0 };
-	scissor.extent = m_swapChain->getExtent();
-	vkCmdSetScissor(m_commandBuffers[currentFrame], 0, 1, &scissor);
+		VkRect2D scissor{};
+		scissor.offset = { 0, 0 };
+		scissor.extent = m_swapChain->getExtent();
+		vkCmdSetScissor(m_commandBuffers[currentFrame], 0, 1, &scissor);
 
-	m_vertexBuffer->bind(m_commandBuffers[currentFrame]);
+		m_vertexBuffer->bind(m_commandBuffers[currentFrame]);
 
-	vkCmdDraw(m_commandBuffers[currentFrame], static_cast<uint32_t>(m_vertexBuffer->getSize()), 1, 0, 0);
+		m_indexBuffer->bind(m_commandBuffers[currentFrame]);
+
+		vkCmdDrawIndexed(m_commandBuffers[currentFrame], static_cast<uint32_t>(m_indexBuffer->getSize()), 1, 0, 0, 0);
 
 	vkCmdEndRenderPass(m_commandBuffers[currentFrame]);
 

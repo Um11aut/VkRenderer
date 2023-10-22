@@ -14,6 +14,7 @@
 #include "../logger.hpp"
 #include "../command_pool.hpp"
 #include "../buffers/vertex_buffer.hpp"
+#include "../buffers/index_buffer.hpp"
 
 class Triangle : public Layer {
 public:
@@ -31,6 +32,7 @@ public:
         VkRenderer::Logger::print({ "Frame count ", std::to_string(frames) });
         syncher->destroy(variables->m_device);
         vertexBuffer->destroy();
+        indexBuffer->destroy();
         commandPool->destroy();
         trianglePipeline->destroy();
         shaderModule->destroy();
@@ -47,7 +49,10 @@ private:
     
     std::shared_ptr<VkRenderer::ShaderModule> shaderModule;
     std::unique_ptr<VkRenderer::CommandPool> commandPool;
+
     std::shared_ptr<VkRenderer::VertexBuffer> vertexBuffer;
+    std::shared_ptr<VkRenderer::IndexBuffer> indexBuffer;
+
     std::shared_ptr<VkRenderer::GraphicsPipeline> trianglePipeline;
 
     const std::vector<Extra::Vertex> vertices = {
@@ -55,6 +60,10 @@ private:
         {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
         {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
         {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+    };
+
+    const std::vector<uint16_t> indices = {
+        0, 1, 2, 2, 3, 0
     };
 
     std::shared_ptr<VkRenderer::SwapChain> swapChain;

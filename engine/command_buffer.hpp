@@ -2,6 +2,7 @@
 
 #include "extra/extra.hpp"
 #include "logger.hpp"
+#include "command_pool.hpp"
 #include <vulkan/vulkan.h>
 
 namespace VkRenderer {

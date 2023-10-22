@@ -2,7 +2,7 @@
 VkRenderer::Buffer::Buffer(VkDevice* device, VkPhysicalDevice* physicalDevice, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
 	: m_device(device), m_size(size), m_usage(usage), m_properties(properties), m_physicalDevice(physicalDevice)
 {
-	create();
+	createAsync();
 	allocate();
 	bindBuffer();
 }
@@ -55,6 +55,18 @@ void VkRenderer::Buffer::allocate()
 void VkRenderer::Buffer::bindBuffer()
 {
 	vkBindBufferMemory(*m_device, m_buffer, m_memory, 0);
+}
+
+void VkRenderer::Buffer::createAsync()
+{
+	std::future<void> createFuture = std::async(std::launch::async, &Buffer::create, this);
+	createFuture.get();
+}
+
+void VkRenderer::Buffer::destroyAsync()
+{
+	std::future<void> destroyFuture = std::async(std::launch::async, &Buffer::destroyBuffer, this);
+	destroyFuture.get(); // Wait for completion
 }
 
 uint32_t VkRenderer::Buffer::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const
