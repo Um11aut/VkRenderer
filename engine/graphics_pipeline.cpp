@@ -52,7 +52,7 @@ void VkRenderer::GraphicsPipeline::createFixedFunctions()
 	rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
 	rasterizer.lineWidth = 1.0f;
 	rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
-	rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
+	rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 	rasterizer.depthBiasEnable = VK_FALSE;
 
 	multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
@@ -74,6 +74,8 @@ void VkRenderer::GraphicsPipeline::createFixedFunctions()
 	colorBlending.pAttachments = &colorBlendAttachment;
 
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+	pipelineLayoutInfo.setLayoutCount = 1;
+	m_descriptor->bindLayoutInfo(pipelineLayoutInfo);
 	//push constants
 
 	if (vkCreatePipelineLayout(m_vars->m_device, &pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS) {
@@ -107,8 +109,8 @@ void VkRenderer::GraphicsPipeline::createPipeline() {
 	}
 }
 
-VkRenderer::GraphicsPipeline::GraphicsPipeline(Extra::VkVars* vars, const std::shared_ptr<ShaderModule> module, std::shared_ptr<SwapChain> swapChain, std::shared_ptr<VertexBuffer> buffer)
-	: m_vars(vars), m_swapChain(swapChain), m_shaderModule(module), m_vertexBuffer(buffer)
+VkRenderer::GraphicsPipeline::GraphicsPipeline(Extra::VkVars* vars, const std::shared_ptr<ShaderModule> module, std::shared_ptr<SwapChain> swapChain, std::shared_ptr<VertexBuffer> buffer, std::shared_ptr<UniformBufferDescriptor> descriptor)
+	: m_vars(vars), m_swapChain(swapChain), m_shaderModule(module), m_vertexBuffer(buffer), m_descriptor(descriptor)
 {
 	createShaderStageInfo();
 	createFixedFunctions();

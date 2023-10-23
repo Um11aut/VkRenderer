@@ -8,6 +8,7 @@
 #include "../swap_chain.hpp"
 #include "../graphics_pipeline.hpp"
 #include "../shader.hpp"
+#include "../descriptor.hpp"
 #include "../render_pass.hpp"
 #include "../draw_command_buffer.hpp"
 #include "../gui/gui.hpp"
@@ -34,6 +35,7 @@ public:
         vertexBuffer->destroy();
         indexBuffer->destroy();
         commandPool->destroy();
+        descriptor->destroy();
         trianglePipeline->destroy();
         shaderModule->destroy();
         renderPass->destroy();
@@ -52,6 +54,7 @@ private:
 
     std::shared_ptr<VkRenderer::VertexBuffer> vertexBuffer;
     std::shared_ptr<VkRenderer::IndexBuffer> indexBuffer;
+    std::shared_ptr<VkRenderer::UniformBufferDescriptor> descriptor;
 
     std::shared_ptr<VkRenderer::GraphicsPipeline> trianglePipeline;
 
@@ -64,6 +67,12 @@ private:
 
     const std::vector<uint16_t> indices = {
         0, 1, 2, 2, 3, 0
+    };
+
+    Extra::UniformBufferObject ubo = {
+        .model = glm::mat4(1.0f),
+        .view = glm::mat4(4.0f),
+        .proj = glm::mat4(2.0f)
     };
 
     std::shared_ptr<VkRenderer::SwapChain> swapChain;

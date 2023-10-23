@@ -13,6 +13,12 @@ namespace Extra {
 		glm::vec3 color;
 	};
 
+	struct UniformBufferObject {
+		glm::mat4 model;
+		glm::mat4 view;
+		glm::mat4 proj;
+	};
+
 	struct AppInfo {
 		std::string appName = "Blank";
 		std::string engineName = "Blank";

@@ -10,7 +10,9 @@ namespace VkRenderer {
 	class Buffer {
 	public:
 		Buffer(VkDevice* device, VkPhysicalDevice* physicalDevice, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
+		Buffer() {}
 		virtual ~Buffer() = default;
+
 
 		void destroyBuffer();
 

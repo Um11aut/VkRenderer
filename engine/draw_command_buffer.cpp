@@ -1,7 +1,7 @@
 #include "draw_command_buffer.hpp"
 
-VkRenderer::DrawCommandBuffer::DrawCommandBuffer(Extra::VkVars* vars, std::shared_ptr<SwapChain> swapChain, std::shared_ptr<GraphicsPipeline> graphicsPipeline, std::shared_ptr<VertexBuffer> vertexBuffer, std::shared_ptr<IndexBuffer> indexBuffer)
-	: m_vars(vars), m_swapChain(swapChain), m_graphicsPipeline(graphicsPipeline), m_vertexBuffer(vertexBuffer), m_indexBuffer(indexBuffer)
+VkRenderer::DrawCommandBuffer::DrawCommandBuffer(Extra::VkVars* vars, std::shared_ptr<SwapChain> swapChain, std::shared_ptr<GraphicsPipeline> graphicsPipeline, std::shared_ptr<VertexBuffer> vertexBuffer, std::shared_ptr<IndexBuffer> indexBuffer, std::shared_ptr<UniformBufferDescriptor> descriptorBuffer)
+	: m_vars(vars), m_swapChain(swapChain), m_graphicsPipeline(graphicsPipeline), m_vertexBuffer(vertexBuffer), m_indexBuffer(indexBuffer), m_descriptorBuffer(descriptorBuffer)
 {
 	m_commandBuffers.resize(Extra::FRAMES_IN_FLIGHT);
 	m_commandBufferAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -76,6 +76,8 @@ void VkRenderer::DrawCommandBuffer::record(const uint32_t currentFrame, uint32_t
 		m_vertexBuffer->bind(m_commandBuffers[currentFrame]);
 
 		m_indexBuffer->bind(m_commandBuffers[currentFrame]);
+
+		m_descriptorBuffer->bind(m_commandBuffers[currentFrame], m_graphicsPipeline->getLayout(), currentFrame);
 
 		vkCmdDrawIndexed(m_commandBuffers[currentFrame], static_cast<uint32_t>(m_indexBuffer->getSize()), 1, 0, 0, 0);
 

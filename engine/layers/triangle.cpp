@@ -6,6 +6,8 @@ Triangle::Triangle(Extra::VkVars* vars, std::shared_ptr<VkRenderer::SwapChain> s
 	renderPass = std::make_unique<VkRenderer::RenderPass>(variables, swapChain);
 	commandPool = std::make_unique<VkRenderer::CommandPool>(variables);
 
+	descriptor = std::make_shared<VkRenderer::UniformBufferDescriptor>(variables, VK_SHADER_STAGE_VERTEX_BIT, sizeof(Extra::UniformBufferObject), 0);
+
 	vertexBuffer = std::make_shared<VkRenderer::VertexBuffer>(variables, sizeof(vertices[0]) * vertices.size());
 	indexBuffer = std::make_shared<VkRenderer::IndexBuffer>(variables, sizeof(indices[0]) * indices.size(), indices.size());
 
@@ -13,9 +15,15 @@ Triangle::Triangle(Extra::VkVars* vars, std::shared_ptr<VkRenderer::SwapChain> s
 	indexBuffer->update(indices.data(), sizeof(indices[0]) * indices.size());
 
 	shaderModule = std::make_shared<VkRenderer::ShaderModule>(variables, "common/shaders/out/fragment.spv", "common/shaders/out/vertex.spv");
-	trianglePipeline = std::make_shared<VkRenderer::GraphicsPipeline>(variables, shaderModule, swapChain, vertexBuffer);
+	trianglePipeline = std::make_shared<VkRenderer::GraphicsPipeline>(variables, shaderModule, swapChain, vertexBuffer, descriptor);
 	
-	commandBuffer = std::make_unique<VkRenderer::DrawCommandBuffer>(variables, swapChain, trianglePipeline, vertexBuffer, indexBuffer);
+	commandBuffer = std::make_unique<VkRenderer::DrawCommandBuffer>(
+		variables, 
+		swapChain, 
+		trianglePipeline,
+		vertexBuffer,
+		indexBuffer,
+		descriptor);
 
 	syncher = std::make_unique<VkRenderer::Syncher>();
 
@@ -40,6 +48,8 @@ void Triangle::draw()
 
 	vkResetFences(variables->m_device, 1, &syncher->m_inFlightFence[currentFrame]);
 	commandBuffer->record(currentFrame, imageIndex);
+
+	descriptor->update(ubo, sizeof(ubo), currentFrame);
 
 	commandBuffer->submit(currentFrame, *syncher);
 

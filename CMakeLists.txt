@@ -17,7 +17,9 @@ set(destination "${CMAKE_CURRENT_BINARY_DIR}/common")
 set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/deps/imgui_t)
 
 # Добавьте источник в исполняемый файл этого проекта.
-add_executable (VkRenderer "main.cpp" "engine/entry.hpp" 
+add_executable (VkRenderer 
+"main.cpp" "engine/entry.hpp" 
+
 "engine/renderer.hpp" "engine/renderer.cpp" 
 "engine/window.cpp" "engine/window.hpp" 
 "engine/instance.cpp" "engine/instance.hpp" 
@@ -38,8 +40,10 @@ add_executable (VkRenderer "main.cpp" "engine/entry.hpp"
 "engine/buffers/vertex_buffer.cpp" "engine/buffers/vertex_buffer.hpp"
 "engine/command_pool.cpp" "engine/command_pool.hpp" 
 "engine/draw_command_buffer.cpp" 
- "engine/buffers/index_buffer.hpp"
-"engine/buffers/staging_buffer.hpp")
+"engine/buffers/index_buffer.hpp"
+"engine/buffers/staging_buffer.hpp" 
+"engine/buffers/uniform_buffer.hpp" 
+"engine/descriptor.hpp" "engine/descriptor.cpp")
 
 
 add_custom_command(TARGET VkRenderer
