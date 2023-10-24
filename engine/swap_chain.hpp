@@ -53,6 +53,8 @@ namespace VkRenderer {
 		inline VkExtent2D getExtent() const { return m_swapChainExtent; }
 		inline VkFormat getFormat() const { return m_imageFormat; }
 
+		inline std::vector<VkImage> getImages() const { return m_images; }
+
 		inline std::vector<VkFramebuffer> getFrameBuffers() const { return m_frameBuffers; }
 		inline SwapChainDetails getDetails() const { return swapChainSupport; }
 

@@ -11,6 +11,7 @@ VkRenderer::Renderer::~Renderer()
 	for (const auto& layer : layers) {
 		layer->onDestroy();
 	}
+	renderPass->destroy();
 	app_window->close();
 	app_debugger->destroy();
 	app_surface->destroy();
@@ -34,7 +35,12 @@ void VkRenderer::Renderer::init()
 {
 	initVk();
 
+	LayerFactory::getInstance().registerLayer<Interface>(&m_variables, app_swapChain);
 	LayerFactory::getInstance().registerLayer<Triangle>(&m_variables, app_swapChain);
+
+	ImGui::CreateContext();
+
+	ImGui_ImplGlfw_InitForVulkan(app_window->getWindow(), true);
 
 	layers = LayerFactory::getInstance().getLayers();
 	for (const auto& layer : layers) {
@@ -49,6 +55,7 @@ void VkRenderer::Renderer::initVk()
 	// Validation Layer(for errors)
 	app_validation_layer = std::make_shared<VkRenderer::ValidationLayer>(enableValidationLayer);
 
+
 	// Create Application Instance
 	app_instance = std::make_unique<VkRenderer::Instance>(
 		app_window->getInfo().appName,
@@ -60,6 +67,7 @@ void VkRenderer::Renderer::initVk()
 	app_instance->create(); // therefore i need to have a create function
 
 	app_instance->printExtensions(false, false); // required, available
+
 
 	// creating Window surface
 	app_surface = std::make_unique<VkRenderer::Surface>(&m_variables, app_window);
@@ -78,5 +86,6 @@ void VkRenderer::Renderer::initVk()
 	app_swapChain->setPresentMode(Extra::MailBox);
 	app_swapChain->create();
 
-	gui = std::make_unique<VkRenderer::GUI>(&m_variables, app_swapChain);
+	renderPass = std::make_unique<VkRenderer::RenderPass>(&m_variables, app_swapChain);
+
 }

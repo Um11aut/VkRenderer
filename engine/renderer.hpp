@@ -17,7 +17,12 @@
 #include "extra/extra.hpp"
 #include "layers/triangle.hpp"
 #include "layers/parent/layer_factory.hpp"
+#include "layers/interface.hpp"
 #include <memory>
+
+#include "imgui.h"
+#include "backends/imgui_impl_vulkan.h"
+#include "backends/imgui_impl_glfw.h"
 
 #ifdef NDEBUG
 	const bool enableValidationLayer = false;
@@ -39,7 +44,7 @@ namespace VkRenderer {
 		std::unique_ptr<VkRenderer::Surface> app_surface;
 		std::unique_ptr<VkRenderer::Device> app_device;
 		std::shared_ptr<VkRenderer::SwapChain> app_swapChain;
-		std::unique_ptr<VkRenderer::GUI> gui;
+		std::unique_ptr<VkRenderer::RenderPass> renderPass;
 
 		std::vector<std::shared_ptr<Layer>> layers;
 

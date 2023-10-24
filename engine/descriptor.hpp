@@ -7,12 +7,6 @@
 #include <iostream>
 #include <memory>
 
-#define GLM_FORCE_RADIANS
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
-#include <chrono>
-
 namespace VkRenderer {
 	class UniformBufferDescriptor {
 	private:
@@ -26,7 +20,6 @@ namespace VkRenderer {
 		VkDescriptorSetLayoutBinding m_layoutBinding{};
 		VkDescriptorSetLayoutCreateInfo m_layoutInfo{};
 
-		VkDescriptorPool m_pool;
 		std::vector<VkDescriptorSet> descriptorSets;
 
 		VkDescriptorPoolSize m_poolSize{};
@@ -47,7 +40,7 @@ namespace VkRenderer {
 			vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
 		}
 
-		void update(auto data, VkDeviceSize size, uint32_t currentFrame)
+		void update(auto& data, VkDeviceSize size, uint32_t currentFrame)
 		{
 			std::memcpy(m_buffers[currentFrame]->getMappedMemory(), &data, size);
 		}

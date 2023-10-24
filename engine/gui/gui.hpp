@@ -4,9 +4,7 @@
 #include "../logger.hpp"
 #include "../device.hpp"
 #include "../swap_chain.hpp"
-#include "imgui.h"
-#include "imgui_impl_vulkan.h"
-#include "imgui_impl_glfw.h"
+#include "gui_render_pass.hpp"
 #include <vulkan/vulkan.h>
 
 namespace VkRenderer {
@@ -16,9 +14,15 @@ namespace VkRenderer {
 
         std::shared_ptr<VkRenderer::SwapChain> m_swapChain;
 
-        ImGui_ImplVulkan_InitInfo initInfo{};
+        std::unique_ptr<Gui::RenderPass> m_GuiRenderer;
     public:
         GUI(Extra::VkVars* vars, std::shared_ptr<VkRenderer::SwapChain> swapChain);
+
+        void update() {
+            
+            m_GuiRenderer->update();
+        }
+
         ~GUI();
     };
 }

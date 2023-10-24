@@ -9,6 +9,10 @@
 #include "buffers/index_buffer.hpp"
 #include <vulkan/vulkan.h>
 
+#include "imgui.h"
+#include "backends/imgui_impl_vulkan.h"
+#include "backends/imgui_impl_glfw.h"
+
 namespace VkRenderer {
     class DrawCommandBuffer {
     private:

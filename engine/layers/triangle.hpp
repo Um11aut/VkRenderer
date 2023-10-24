@@ -16,10 +16,17 @@
 #include "../command_pool.hpp"
 #include "../buffers/vertex_buffer.hpp"
 #include "../buffers/index_buffer.hpp"
+#include "interface.hpp"
+
+#define GLM_FORCE_RADIANS
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+#include <chrono>
 
 class Triangle : public Layer {
 public:
-    Triangle(Extra::VkVars* vars, std::shared_ptr<VkRenderer::SwapChain> swapChain);
+    Triangle(Extra::VkVars * vars, std::shared_ptr<VkRenderer::SwapChain> swapChain);
 
     void onStart() override {
         std::cout << "Triangle Application" << std::endl;
@@ -38,19 +45,17 @@ public:
         descriptor->destroy();
         trianglePipeline->destroy();
         shaderModule->destroy();
-        renderPass->destroy();
         swapChain->destroy();
-
     }
 private:
     Extra::VkVars* variables;
     uint32_t currentFrame = 0;
     uint32_t frames = 0;
 
-    std::unique_ptr<VkRenderer::RenderPass> renderPass;
-    
+
     std::shared_ptr<VkRenderer::ShaderModule> shaderModule;
     std::unique_ptr<VkRenderer::CommandPool> commandPool;
+
 
     std::shared_ptr<VkRenderer::VertexBuffer> vertexBuffer;
     std::shared_ptr<VkRenderer::IndexBuffer> indexBuffer;

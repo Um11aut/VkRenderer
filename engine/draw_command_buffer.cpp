@@ -51,7 +51,7 @@ void VkRenderer::DrawCommandBuffer::record(const uint32_t currentFrame, uint32_t
 	renderPassInfo.renderArea.offset = { 0,0 };
 	renderPassInfo.renderArea.extent = m_swapChain->getExtent();
 
-	VkClearValue clearColor = { {{0.0f, 0.0f, 1.0f, 1.0f}} };
+	VkClearValue clearColor = { {{0.0f, 0.0f, 0.0f, 1.0f}} };
 	renderPassInfo.clearValueCount = 1;
 	renderPassInfo.pClearValues = &clearColor;
 
@@ -80,6 +80,15 @@ void VkRenderer::DrawCommandBuffer::record(const uint32_t currentFrame, uint32_t
 		m_descriptorBuffer->bind(m_commandBuffers[currentFrame], m_graphicsPipeline->getLayout(), currentFrame);
 
 		vkCmdDrawIndexed(m_commandBuffers[currentFrame], static_cast<uint32_t>(m_indexBuffer->getSize()), 1, 0, 0, 0);
+
+		ImGui_ImplVulkan_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
+		ImGui::ShowDemoWindow();
+
+		ImGui::Render();
+		ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), m_commandBuffers[currentFrame]);
 
 	vkCmdEndRenderPass(m_commandBuffers[currentFrame]);
 
