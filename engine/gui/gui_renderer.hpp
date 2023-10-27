@@ -9,26 +9,34 @@
 #include "../command_buffer.hpp"
 
 #include "imgui.h"
+#include "imgui_internal.h"
 #include "backends/imgui_impl_vulkan.h"
 #include "backends/imgui_impl_glfw.h"
 
 using namespace VkRenderer;
 
 namespace Gui {
-	class RenderPass {
+	class GuiRenderer {
 	private:
 		Extra::VkVars* m_vars;
 
 		std::unique_ptr<CommandBuffer> commandBuffer;
 
 		ImGui_ImplVulkan_InitInfo initInfo{};
+		VkDescriptorPool imguiPool;
 
 		std::shared_ptr<SwapChain> m_swapChain;
 	public:
-		RenderPass(Extra::VkVars* vars, std::shared_ptr<SwapChain> swapChain) 
+		GuiRenderer(Extra::VkVars* vars, std::shared_ptr<SwapChain> swapChain)
 			: m_swapChain(swapChain), m_vars(vars)
 		{
 			auto indices = Device::findSupportedQueueFamilies(m_vars->m_physicalDevice, m_vars->m_surface);
+
+			ImGuiIO& io = ImGui::GetIO();
+			io.Fonts->AddFontDefault();
+			io.Fonts->Build();
+			io.FontGlobalScale = 1.0f;
+			io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
 			VkDescriptorPoolSize pool_sizes[] =
 			{
@@ -52,7 +60,6 @@ namespace Gui {
 			pool_info.poolSizeCount = std::size(pool_sizes);
 			pool_info.pPoolSizes = pool_sizes;
 
-			VkDescriptorPool imguiPool;
 			vkCreateDescriptorPool(m_vars->m_device, &pool_info, nullptr, &imguiPool);
 
 			initInfo.Instance = m_vars->m_instance;
@@ -76,34 +83,10 @@ namespace Gui {
 		}
 
 		void update() {
-			commandBuffer->startSingleUse();
-				VkRenderPassBeginInfo renderPassInfo{};
-				renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-				renderPassInfo.renderPass = m_vars->m_renderPass;
-				renderPassInfo.framebuffer = m_swapChain->getFrameBuffers()[0];
-				renderPassInfo.renderArea.offset = { 0,0 };
-				renderPassInfo.renderArea.extent = m_swapChain->getExtent();
-
-				VkClearValue clearColor = { {{0.0f, 0.0f, 0.0f, 1.0f}} };
-				renderPassInfo.clearValueCount = 1;
-				renderPassInfo.pClearValues = &clearColor;
-
-				vkCmdBeginRenderPass(commandBuffer->get(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-					ImGui_ImplVulkan_NewFrame();
-					ImGui_ImplGlfw_NewFrame();
-					ImGui::NewFrame();
-
-					ImGui::ShowDemoWindow();
-
-					ImGui::Render();
-					ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), commandBuffer->get());
-				vkCmdEndRenderPass(commandBuffer->get());
-
-			commandBuffer->endSingleUse();
 		}
 
-
-		~RenderPass() {
+		void destroy() {
+			vkDestroyDescriptorPool(m_vars->m_device, imguiPool, nullptr);
 		}
 	};
 }

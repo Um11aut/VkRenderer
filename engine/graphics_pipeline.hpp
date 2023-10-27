@@ -3,7 +3,7 @@
 #include <vulkan/vulkan.h>
 #include "shader.hpp"
 #include "swap_chain.hpp"
-#include "descriptor.hpp"
+#include "ubo_descriptor.hpp"
 #include "buffers/vertex_buffer.hpp"
 #include <array>
 #include <vector>

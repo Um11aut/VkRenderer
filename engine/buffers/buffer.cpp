@@ -45,7 +45,7 @@ void VkRenderer::Buffer::allocate()
 	VkMemoryAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 	allocInfo.allocationSize = memRequirements.size;
-	allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, m_properties);
+	allocInfo.memoryTypeIndex = findMemoryType(*m_physicalDevice, memRequirements.memoryTypeBits, m_properties);
 
 	if (vkAllocateMemory(*m_device, &allocInfo, nullptr, &m_memory) != VK_SUCCESS) {
 		throw std::runtime_error("Failed to allocate buffer memory!");
@@ -69,10 +69,10 @@ void VkRenderer::Buffer::destroyAsync()
 	destroyFuture.get(); // Wait for completion
 }
 
-uint32_t VkRenderer::Buffer::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const
+uint32_t VkRenderer::Buffer::findMemoryType(VkPhysicalDevice& device, uint32_t typeFilter, VkMemoryPropertyFlags properties)
 {
 	VkPhysicalDeviceMemoryProperties memProperties;
-	vkGetPhysicalDeviceMemoryProperties(*m_physicalDevice, &memProperties);
+	vkGetPhysicalDeviceMemoryProperties(device, &memProperties);
 
 	for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
 		if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {

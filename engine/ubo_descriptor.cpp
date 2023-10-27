@@ -1,4 +1,4 @@
-#include "descriptor.hpp"
+#include "ubo_descriptor.hpp"
 
 void VkRenderer::UniformBufferDescriptor::createDescriptorSetLayout()
 {
@@ -46,9 +46,9 @@ void VkRenderer::UniformBufferDescriptor::createDescriptorPool()
 	m_poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
 	m_poolInfo.poolSizeCount = 1;
 	m_poolInfo.pPoolSizes = &m_poolSize;
-	m_poolInfo.maxSets = static_cast<uint32_t>(Extra::FRAMES_IN_FLIGHT) * 2;
+	m_poolInfo.maxSets = static_cast<uint32_t>(Extra::FRAMES_IN_FLIGHT);
 
-	if (vkCreateDescriptorPool(m_vars->m_device, &m_poolInfo, nullptr, &m_vars->m_pool) != VK_SUCCESS) {}
+	if (vkCreateDescriptorPool(m_vars->m_device, &m_poolInfo, nullptr, &m_pool) != VK_SUCCESS) {}
 }
 
 void VkRenderer::UniformBufferDescriptor::createDescriptorSet()
@@ -57,7 +57,7 @@ void VkRenderer::UniformBufferDescriptor::createDescriptorSet()
 
 	VkDescriptorSetAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-	allocInfo.descriptorPool = m_vars->m_pool;
+	allocInfo.descriptorPool = m_pool;
 	allocInfo.descriptorSetCount = static_cast<uint32_t>(Extra::FRAMES_IN_FLIGHT);
 	allocInfo.pSetLayouts = layouts.data();
 
@@ -73,7 +73,7 @@ void VkRenderer::UniformBufferDescriptor::createDescriptorSet()
 		VkWriteDescriptorSet descriptorWrite{};
 		descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 		descriptorWrite.dstSet = descriptorSets[i];
-		descriptorWrite.dstBinding = 0;
+		descriptorWrite.dstBinding = m_binding;
 		descriptorWrite.dstArrayElement = 0;
 		descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 		descriptorWrite.descriptorCount = 1;
@@ -85,7 +85,7 @@ void VkRenderer::UniformBufferDescriptor::createDescriptorSet()
 
 void VkRenderer::UniformBufferDescriptor::destroy()
 {
-	vkDestroyDescriptorPool(m_vars->m_device, m_vars->m_pool, nullptr);
+	vkDestroyDescriptorPool(m_vars->m_device, m_pool, nullptr);
 	for (const auto& buffer : m_buffers) {
 		buffer->destroy();
 	}

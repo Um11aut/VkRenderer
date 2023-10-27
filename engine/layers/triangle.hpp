@@ -8,7 +8,7 @@
 #include "../swap_chain.hpp"
 #include "../graphics_pipeline.hpp"
 #include "../shader.hpp"
-#include "../descriptor.hpp"
+#include "../ubo_descriptor.hpp"
 #include "../render_pass.hpp"
 #include "../draw_command_buffer.hpp"
 #include "../gui/gui.hpp"
@@ -16,7 +16,7 @@
 #include "../command_pool.hpp"
 #include "../buffers/vertex_buffer.hpp"
 #include "../buffers/index_buffer.hpp"
-#include "interface.hpp"
+#include "../texture/texture.hpp"
 
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
@@ -42,7 +42,7 @@ public:
         vertexBuffer->destroy();
         indexBuffer->destroy();
         commandPool->destroy();
-        descriptor->destroy();
+        UBOdescriptor->destroy();
         trianglePipeline->destroy();
         shaderModule->destroy();
         swapChain->destroy();
@@ -52,14 +52,12 @@ private:
     uint32_t currentFrame = 0;
     uint32_t frames = 0;
 
-
     std::shared_ptr<VkRenderer::ShaderModule> shaderModule;
     std::unique_ptr<VkRenderer::CommandPool> commandPool;
 
-
     std::shared_ptr<VkRenderer::VertexBuffer> vertexBuffer;
     std::shared_ptr<VkRenderer::IndexBuffer> indexBuffer;
-    std::shared_ptr<VkRenderer::UniformBufferDescriptor> descriptor;
+    std::shared_ptr<VkRenderer::UniformBufferDescriptor> UBOdescriptor;
 
     std::shared_ptr<VkRenderer::GraphicsPipeline> trianglePipeline;
 
@@ -74,13 +72,10 @@ private:
         0, 1, 2, 2, 3, 0
     };
 
-    Extra::UniformBufferObject ubo = {
-        .model = glm::mat4(1.0f),
-        .view = glm::mat4(4.0f),
-        .proj = glm::mat4(2.0f)
-    };
-
     std::shared_ptr<VkRenderer::SwapChain> swapChain;
+
+    std::unique_ptr<VkRenderer::Texture> texture;
+
     std::unique_ptr<VkRenderer::DrawCommandBuffer> commandBuffer;
     std::unique_ptr <VkRenderer::Syncher> syncher;
 

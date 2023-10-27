@@ -5,7 +5,7 @@
 #include "swap_chain.hpp"
 #include "graphics_pipeline.hpp"
 #include "drawer.hpp"
-#include "descriptor.hpp"
+#include "ubo_descriptor.hpp"
 #include "buffers/index_buffer.hpp"
 #include <vulkan/vulkan.h>
 

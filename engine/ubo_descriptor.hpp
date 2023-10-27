@@ -16,6 +16,7 @@ namespace VkRenderer {
 		VkShaderStageFlagBits m_shaderType;
 
 		VkDescriptorSetLayout m_layout;
+		VkDescriptorPool m_pool;
 
 		VkDescriptorSetLayoutBinding m_layoutBinding{};
 		VkDescriptorSetLayoutCreateInfo m_layoutInfo{};

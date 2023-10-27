@@ -20,6 +20,8 @@ namespace VkRenderer {
 			vkUnmapMemory(*m_device, m_memory);
 		}
 
+		inline const VkBuffer& get() const { return m_buffer; }
+
 		void destroy() {
 			destroyAsync();
 		}

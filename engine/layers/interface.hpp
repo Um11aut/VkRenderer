@@ -8,10 +8,6 @@
 #include "../render_pass.hpp"
 #include "../gui/gui.hpp"
 
-#include "imgui.h"
-#include "imgui_impl_vulkan.h"
-#include "imgui_impl_glfw.h"
-
 class Interface : public Layer {
 public:
     Interface(Extra::VkVars* vars, std::shared_ptr<VkRenderer::SwapChain> swapChain);

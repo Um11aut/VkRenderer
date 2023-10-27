@@ -12,8 +12,7 @@ namespace VkRenderer {
 		Buffer(VkDevice* device, VkPhysicalDevice* physicalDevice, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
 		Buffer() {}
 		virtual ~Buffer() = default;
-
-
+		
 		void destroyBuffer();
 
 		void copyTo(std::unique_ptr<VkRenderer::CommandBuffer>& comamndBuffer, VkBuffer& dst, VkDeviceSize size);
@@ -21,6 +20,7 @@ namespace VkRenderer {
 		virtual void update(const void* data, VkDeviceSize size) = 0;
 		virtual void bind(VkCommandBuffer buffer) const = 0;
 
+		static uint32_t findMemoryType(VkPhysicalDevice& device, uint32_t typeFilter, VkMemoryPropertyFlags properties);
 	protected:
 		VkDevice* m_device;
 		VkPhysicalDevice* m_physicalDevice;
@@ -39,6 +39,5 @@ namespace VkRenderer {
 		void createAsync();
 		void destroyAsync();
 
-		uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const;
 	};
 }

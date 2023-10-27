@@ -1,9 +1,10 @@
-﻿# Example usage:
-#  mkdir build
-#  cd build
-#  cmake -g "Visual Studio 14 2015" ..
+﻿cmake_minimum_required(VERSION 3.10)
 
-cmake_minimum_required(VERSION 3.10)
+if (POLICY CMP0141)
+  cmake_policy(SET CMP0141 NEW)
+  set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
+endif()
+
 project(VkRenderer CXX)
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -30,10 +31,10 @@ add_subdirectory(deps/glm)
 set(IMGUI_DIR deps/imgui)
 include_directories(${IMGUI_DIR} ${IMGUI_DIR}/backends ..)
 
+set(STB_DIR deps/stb)
+
 set(source "${CMAKE_SOURCE_DIR}/common")
 set(destination "${CMAKE_CURRENT_BINARY_DIR}/common")
-
-
 
 # Libraries
 find_package(Vulkan REQUIRED)
@@ -62,7 +63,7 @@ file(GLOB sources add_executable VkRenderer
 "engine/render_pass.cpp"
 "engine/command_buffer.cpp" "engine/command_buffer.hpp" 
 "engine/drawer.cpp" "engine/drawer.hpp" 
-"engine/gui/gui.cpp" "engine/gui/gui.hpp" "engine/layers/triangle.cpp" 
+"engine/gui/gui.cpp" "engine/gui/gui.hpp" "engine/layers/triangle.cpp" "engine/layers/triangle.hpp" 
 "engine/layers/parent/layer_factory.hpp" "engine/layers/parent/layer.hpp" 
 "engine/buffers/buffer.hpp" "engine/buffers/buffer.cpp" 
 "engine/buffers/vertex_buffer.cpp" "engine/buffers/vertex_buffer.hpp"
@@ -71,18 +72,24 @@ file(GLOB sources add_executable VkRenderer
 "engine/buffers/index_buffer.hpp"
 "engine/buffers/staging_buffer.hpp" 
 "engine/buffers/uniform_buffer.hpp" 
-"engine/descriptor.hpp" "engine/descriptor.cpp" 
+"engine/ubo_descriptor.hpp" "engine/ubo_descriptor.cpp" 
 "engine/layers/interface.cpp" "engine/layers/interface.hpp"
 "engine/gui/gui.hpp" "engine/gui/gui.cpp"
-"engine/gui/gui_render_pass.hpp")
+"engine/gui/gui_renderer.hpp" "engine/texture/texture.hpp" "engine/texture/texture.cpp")
 
 
-add_executable(VkRenderer ${sources} ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp ${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp ${IMGUI_DIR}/imgui.cpp ${IMGUI_DIR}/imgui_draw.cpp ${IMGUI_DIR}/imgui_demo.cpp ${IMGUI_DIR}/imgui_tables.cpp ${IMGUI_DIR}/imgui_widgets.cpp)
+include_directories(
+    ${STB_DIR}
+)
+add_library(stb_image INTERFACE)
+target_include_directories(stb_image INTERFACE ${STB_DIR})
+
+add_executable(VkRenderer ${sources} ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp ${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp ${IMGUI_DIR}/imgui.cpp ${IMGUI_DIR}/imgui_draw.cpp ${IMGUI_DIR}/imgui_demo.cpp ${IMGUI_DIR}/imgui_tables.cpp ${IMGUI_DIR}/imgui_widgets.cpp "engine/texture_descriptor.cpp")
 
 add_custom_command(TARGET VkRenderer
     COMMAND ${CMAKE_COMMAND} -E create_symlink ${source} ${destination}
     DEPENDS ${destination}
     COMMENT "symbolic link common folder from ${source} => ${destination}")
 
-target_link_libraries(VkRenderer ${LIBRARIES})
+target_link_libraries(VkRenderer ${LIBRARIES} stb_image)
 target_compile_definitions(VkRenderer PUBLIC -DImTextureID=ImU64)

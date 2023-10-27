@@ -56,10 +56,6 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
       }
-    },
-    {
-      "name": "debug",
-      "toolchainFile": "C:/Users/askk/vcpkg/scripts/buildsystems/vcpkg.cmake"
     }
   ]
 }

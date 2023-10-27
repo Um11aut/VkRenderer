@@ -5,8 +5,9 @@ Triangle::Triangle(Extra::VkVars* vars, std::shared_ptr<VkRenderer::SwapChain> s
 {
 	commandPool = std::make_unique<VkRenderer::CommandPool>(variables);
 
+	texture = std::make_unique<VkRenderer::Texture>(variables, "common/textures/texture.jpg");
 
-	descriptor = std::make_shared<VkRenderer::UniformBufferDescriptor>(variables, VK_SHADER_STAGE_VERTEX_BIT, sizeof(Extra::UniformBufferObject), 0);
+	UBOdescriptor = std::make_shared<VkRenderer::UniformBufferDescriptor>(variables, VK_SHADER_STAGE_VERTEX_BIT, sizeof(Extra::UniformBufferObject), 0);
 
 	vertexBuffer = std::make_shared<VkRenderer::VertexBuffer>(variables, sizeof(vertices[0]) * vertices.size());
 	indexBuffer = std::make_shared<VkRenderer::IndexBuffer>(variables, sizeof(indices[0]) * indices.size(), indices.size());
@@ -15,7 +16,7 @@ Triangle::Triangle(Extra::VkVars* vars, std::shared_ptr<VkRenderer::SwapChain> s
 	indexBuffer->update(indices.data(), sizeof(indices[0]) * indices.size());
 
 	shaderModule = std::make_shared<VkRenderer::ShaderModule>(variables, "common/shaders/out/fragment.spv", "common/shaders/out/vertex.spv");
-	trianglePipeline = std::make_shared<VkRenderer::GraphicsPipeline>(variables, shaderModule, swapChain, vertexBuffer, descriptor);
+	trianglePipeline = std::make_shared<VkRenderer::GraphicsPipeline>(variables, shaderModule, swapChain, vertexBuffer, UBOdescriptor);
 	
 	commandBuffer = std::make_unique<VkRenderer::DrawCommandBuffer>(
 		variables, 
@@ -23,7 +24,7 @@ Triangle::Triangle(Extra::VkVars* vars, std::shared_ptr<VkRenderer::SwapChain> s
 		trianglePipeline,
 		vertexBuffer,
 		indexBuffer,
-		descriptor);
+		UBOdescriptor);
 
 	syncher = std::make_unique<VkRenderer::Syncher>();
 
@@ -60,7 +61,7 @@ void Triangle::draw()
 	ubo.proj = glm::perspective(glm::radians(45.0f), swapChain->getExtent().width / (float)swapChain->getExtent().height, 0.1f, 10.0f);
 	ubo.proj[1][1] *= -1;
 
-	descriptor->update(ubo, sizeof(ubo), currentFrame);
+	UBOdescriptor->update(ubo, sizeof(ubo), currentFrame);
 
 	commandBuffer->submit(currentFrame, *syncher);
 
