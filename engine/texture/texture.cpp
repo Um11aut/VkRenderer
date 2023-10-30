@@ -6,13 +6,40 @@ VkRenderer::Texture::Texture(Extra::VkVars* vars, const char* path)
 	: m_vars(vars), m_path(path)
 {
 	m_commandBuffer = std::make_unique<CommandBuffer>(m_vars);
+	m_textureDescriptor = std::make_unique<TextureDescriptor>(m_vars);
 	createTextureImage();
+	createTextureImageView();
+	createTextureSampler();
 }
 
 void VkRenderer::Texture::destroy()
 {
+	vkDestroySampler(m_vars->m_device, m_sampler, nullptr);
+	vkDestroyImageView(m_vars->m_device, m_textureImageView, nullptr);
+
 	vkDestroyImage(m_vars->m_device, m_textureImage, nullptr);
 	vkFreeMemory(m_vars->m_device, m_textureImageMemory, nullptr);
+}
+
+VkImageView VkRenderer::Texture::createImageView(VkImage image, VkFormat format)
+{
+	VkImageViewCreateInfo viewInfo{};
+	viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+	viewInfo.image = image;
+	viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+	viewInfo.format = format;
+	viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	viewInfo.subresourceRange.baseMipLevel = 0;
+	viewInfo.subresourceRange.levelCount = 1;
+	viewInfo.subresourceRange.baseArrayLayer = 0;
+	viewInfo.subresourceRange.layerCount = 1;
+
+	VkImageView imageView;
+	if (vkCreateImageView(m_vars->m_device, &viewInfo, nullptr, &imageView) != VK_SUCCESS) {
+		throw std::runtime_error("failed to create texture image view!");
+	}
+
+	return imageView;
 }
 
 void VkRenderer::Texture::createTextureImage()
@@ -74,6 +101,45 @@ void VkRenderer::Texture::createTextureImage()
 	transitionImageLayout(m_textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 	m_stagingBuffer->destroy();
+}
+
+void VkRenderer::Texture::createTextureImageView()
+{
+	m_textureImageView = createImageView(m_textureImage, VK_FORMAT_R8G8B8A8_SRGB);
+}
+
+void VkRenderer::Texture::createTextureSampler()
+{
+	VkSamplerCreateInfo samplerInfo{};
+	samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+	samplerInfo.magFilter = VK_FILTER_LINEAR;
+	samplerInfo.minFilter = VK_FILTER_LINEAR;
+	samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+	samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+	samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+
+	samplerInfo.anisotropyEnable = VK_TRUE;
+
+	VkPhysicalDeviceProperties properties{};
+	vkGetPhysicalDeviceProperties(m_vars->m_physicalDevice, &properties);
+
+	samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
+
+	Logger::print({ "Max anysotropic filtration used: ", std::to_string(samplerInfo.maxAnisotropy) });
+
+	samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+	samplerInfo.unnormalizedCoordinates = VK_FALSE;
+	samplerInfo.compareEnable = VK_FALSE;
+	samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+	samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+	samplerInfo.mipLodBias = 0.0f;
+	samplerInfo.minLod = 0.0f;
+	samplerInfo.maxLod = 0.0f;
+
+	if (vkCreateSampler(m_vars->m_device, &samplerInfo, nullptr, &m_sampler) != VK_SUCCESS) {}
+
+	m_textureDescriptor->bindDescriptorImageInfo(m_textureImageView, m_sampler);
+	m_textureDescriptor->create();
 }
 
 void VkRenderer::Texture::createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory)

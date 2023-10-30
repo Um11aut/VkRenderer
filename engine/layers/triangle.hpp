@@ -40,6 +40,7 @@ public:
         VkRenderer::Logger::print({ "Frame count ", std::to_string(frames) });
         syncher->destroy(variables->m_device);
         vertexBuffer->destroy();
+        texture->destroy();
         indexBuffer->destroy();
         commandPool->destroy();
         UBOdescriptor->destroy();

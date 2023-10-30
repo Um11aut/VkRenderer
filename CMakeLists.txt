@@ -84,7 +84,7 @@ include_directories(
 add_library(stb_image INTERFACE)
 target_include_directories(stb_image INTERFACE ${STB_DIR})
 
-add_executable(VkRenderer ${sources} ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp ${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp ${IMGUI_DIR}/imgui.cpp ${IMGUI_DIR}/imgui_draw.cpp ${IMGUI_DIR}/imgui_demo.cpp ${IMGUI_DIR}/imgui_tables.cpp ${IMGUI_DIR}/imgui_widgets.cpp "engine/texture_descriptor.cpp")
+add_executable(VkRenderer ${sources} ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp ${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp ${IMGUI_DIR}/imgui.cpp ${IMGUI_DIR}/imgui_draw.cpp ${IMGUI_DIR}/imgui_demo.cpp ${IMGUI_DIR}/imgui_tables.cpp ${IMGUI_DIR}/imgui_widgets.cpp "engine/texture/texture_descriptor.cpp")
 
 add_custom_command(TARGET VkRenderer
     COMMAND ${CMAKE_COMMAND} -E create_symlink ${source} ${destination}

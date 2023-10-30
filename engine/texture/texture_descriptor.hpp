@@ -1,17 +1,23 @@
 #pragma once
 #include <vulkan/vulkan.h>
-#include "extra/extra.hpp"
+#include "../extra/extra.hpp"
 
 namespace VkRenderer {
 	class TextureDescriptor {
 	public:
 		TextureDescriptor(Extra::VkVars* vars);
 
+		void bindDescriptorImageInfo(VkImageView& imageView, VkSampler& sampler);
+
+		void create();
+
 	private:
 		Extra::VkVars* m_vars;
 
+		VkDescriptorImageInfo imageInfo{};
+
 		VkDescriptorSetLayout layout;
-		VkDescriptorSetLayoutBinding layoutBinding;
+		VkDescriptorPool pool;
 		VkDescriptorSet descriptorSet;
 	};
 }
